@@ -1,90 +1,98 @@
 import os
-import httpx
-from fastapi import FastAPI
-from pydantic import BaseModel
-from typing import List, Optional
+import requests
 from dotenv import load_dotenv
+from pydantic import AnyHttpUrl, TypeAdapter, ValidationError
+from PIL import Image
+from io import BytesIO
+from google import genai
+from google.genai import types
+from langchain.agents import create_agent
+from langchain.agents.middleware import SummarizationMiddleware
 from langchain_google_genai import ChatGoogleGenerativeAI
-from src.prompt import generate_certificate_prompt, parser, CertificateValidationOutput
-from src.helper import TextExtractorModel, chat_with_user, FakeDetector
+from src.prompt import fake_detection_prompt, fake_parser, FakeDetectionOutput
 
 load_dotenv()
 
-USER_INFO_API = os.getenv("USER_INFO_API")
-
-app = FastAPI()
-
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash",
-    temperature=0.3,
+    temperature=0.7,
 )
 
-
-class Skill(BaseModel):
-    skill: str | None = None
-    level: int | None = None
+user_sessions: dict = {}
 
 
-class UserMessage(BaseModel):
-    username: str
-    skills: List[Skill]
-    certificateUrl: str
+class TextExtractorModel:
+    def __init__(self):
+        self.client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+        self.model = "gemini-2.5-flash"
 
+    def _validate_url(self, file_url: str) -> str:
+        adapter = TypeAdapter(AnyHttpUrl)
+        try:
+            return str(adapter.validate_python(file_url))
+        except ValidationError as e:
+            raise ValueError(f"Invalid URL: {file_url}") from e
 
-class SpringBootResponse(BaseModel):
-    success: bool
-    message: UserMessage
+    def extract_text_from_url(self, file_url: str) -> str:
+        validated_url = self._validate_url(file_url)
 
-
-class ChatRequest(BaseModel):
-    username: str
-    message: str
-
-
-@app.get("/validate-user/{username}")
-async def validate_user(username: str):
-    url = USER_INFO_API.format(username=username)
-
-    async with httpx.AsyncClient() as client:
-        response = await client.get(url)
+        response = requests.get(validated_url)
         response.raise_for_status()
-        data = SpringBootResponse(**response.json())
 
-    fake_detector = FakeDetector()
-    authenticity = fake_detector.detect(data.message.certificateUrl)
+        try:
+            Image.open(BytesIO(response.content)).convert("RGB")
+        except Exception as e:
+            raise ValueError(
+                "Failed to open image. Ensure the URL points to an image file."
+            ) from e
 
-    if not authenticity.authentic:
-        return {
-            "username": username,
-            "summary": "Not Verified",
-            "reason": f"Certificate appears fake: {authenticity.reason}",
-        }
+        result = self.client.models.generate_content(
+            model=self.model,
+            contents=[
+                types.Part.from_bytes(data=response.content, mime_type="image/png"),
+                "Extract all text from this certificate image. Return only the extracted text, nothing else.",
+            ],
+        )
 
-    user_skills = [
-        f"{skill.skill} (level {skill.level})" if skill.skill else f"Level {skill.level}"
-        for skill in data.message.skills
-    ]
-
-    textExtractor = TextExtractorModel()
-    certificate_text = textExtractor.extract_text_from_url(data.message.certificateUrl)
-
-    prompt = generate_certificate_prompt(
-        username=data.message.username,
-        user_skills=user_skills,
-        certificate_text=certificate_text,
-    )
-
-    raw_output = llm.invoke(prompt)
-    validation_result: CertificateValidationOutput = parser.parse(raw_output.content)
-
-    return validation_result.model_dump()
+        return result.text.strip() or "No text extracted"
 
 
-@app.post("/chatbot")
-async def chatbot(request: ChatRequest):
-    response = chat_with_user(request.username, request.message)
-    return {
-        "username": request.username,
-        "message": request.message,
-        "response": response,
-    }
+class FakeDetector:
+    def __init__(self):
+        self.client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+        self.model = "gemini-2.5-flash"
+
+    def detect(self, image_url: str) -> FakeDetectionOutput:
+        response = requests.get(image_url)
+        response.raise_for_status()
+
+        result = self.client.models.generate_content(
+            model=self.model,
+            contents=[
+                types.Part.from_bytes(data=response.content, mime_type="image/png"),
+                fake_detection_prompt.format(),
+            ],
+        )
+
+        return fake_parser.parse(result.text)
+
+
+def get_user_agent(username: str):
+    if username not in user_sessions:
+        user_sessions[username] = create_agent(
+            model=llm,
+            tools=[],
+            middleware=[
+                SummarizationMiddleware(
+                    llm=llm,
+                    max_tokens=1000,
+                )
+            ],
+        )
+    return user_sessions[username]
+
+
+def chat_with_user(username: str, message: str) -> str:
+    agent = get_user_agent(username)
+    response = agent.invoke({"input": message})
+    return response["output"]

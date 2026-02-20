@@ -21,9 +21,7 @@ llm = ChatGoogleGenerativeAI(
 )
 
 
-# -------------------------
 # Pydantic models matching Spring Boot response
-# -------------------------
 class Skill(BaseModel):
     skill: str | None = None
     level: int | None = None

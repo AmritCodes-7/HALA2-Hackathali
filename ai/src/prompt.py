@@ -13,8 +13,7 @@ class SkillVerification(BaseModel):
 
 class CertificateValidationOutput(BaseModel):
     username: str
-    skills_verification: List[SkillVerification]
-    summary: str  # "Verified" or "Not Verified"
+    result: str  # true or false
 
 
 certificate_prompt_template = """
@@ -54,19 +53,20 @@ Instructions:
 - Only mark "Not Verified" if there is absolutely no evidence or relation
 - Ignore filler text like "Lorem ipsum", "Signature", "Name Surname"
 - Summary must be "Verified" if ALL skills are verified, otherwise "Not Verified"
+- result must be true if verified or false if not verified
 
 Username: {username}
 Claimed Skills: {user_skills}
 Certificate Text: {certificate_text}
 
+# "skills_verification": [
+#     {{"skill": "Barber (level 5)", "status": "Verified", "reason": "Certificate mentions hair cutting and styling training"}},
+#     {{"skill": "Plumber (level 3)", "status": "Not Verified", "reason": "No mention of plumbing or related work found"}}
+#   ],
 Return your output as JSON:
 {{
   "username": "{username}",
-  "skills_verification": [
-    {{"skill": "Barber (level 5)", "status": "Verified", "reason": "Certificate mentions hair cutting and styling training"}},
-    {{"skill": "Plumber (level 3)", "status": "Not Verified", "reason": "No mention of plumbing or related work found"}}
-  ],
-  "summary": "Verified" or "Not Verified"
+  "result": true or false 
 }}
 
 Important:
