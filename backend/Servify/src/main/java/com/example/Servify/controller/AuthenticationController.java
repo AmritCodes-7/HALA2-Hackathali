@@ -75,7 +75,7 @@ public class AuthenticationController {
         user.setDateOfBirth(dateOfBirth);
         user.setSkills(skill);
         user.setPhoneNumber(phoneNumber);
-        user.setCertificateUrl("http://localhost:8080/api/image/" + store);
+        user.setCertificateUrl("http://localhost:8080/api/v1/image/" + store);
         String message = authService.registerStaff(user);
         return ResponseEntity.ok().body(new BackendResponse(true,message));
     }

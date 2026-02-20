@@ -41,5 +41,10 @@ public class SkillServices {
         return skillDto;
     }
 
+    public String addSkill(Skill skill){
+        skillRepo.save(skill);
+        return "skill added";
+    }
+
 
 }
