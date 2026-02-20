@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 public interface SkillRepo extends MongoRepository<Skill, String> {
 
     Skill findSkillBySkillId(String skillId);
+    Skill findByName(String skillname);
 
-    @Override
-    boolean existsById(String s);
+    boolean existsByName(String name);
 }

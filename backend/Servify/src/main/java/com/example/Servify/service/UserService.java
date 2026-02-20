@@ -2,6 +2,7 @@ package com.example.Servify.service;
 
 import java.util.List;
 
+import com.example.Servify.exceptions.SkillDoesntExist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,8 @@ public class UserService {
     private final UserRepo userRepo;
     private final SkillRepo skillRepo;
 
-    @Autowired private DtoMapper dtoMapper;
+    @Autowired
+    private DtoMapper dtoMapper;
 
     public UserService(UserRepo userRepo, SkillRepo skillRepo) {
         this.userRepo = userRepo;
@@ -42,7 +44,13 @@ public class UserService {
 
     }
 
-    public List<UsersDto> findUserWithSkill(String skillId) {
+    public List<UsersDto> findUserWithSkill(String skillname) {
+        if (!skillRepo.existsByName(skillname)) {
+            throw new SkillDoesntExist();
+        }
+
+        String skillId = skillRepo.findByName(skillname).getSkillId();
+
         return userRepo.findBySkillsSkillId(skillId).stream()
                 .map(users -> dtoMapper.UserToDto(users))
                 .toList();

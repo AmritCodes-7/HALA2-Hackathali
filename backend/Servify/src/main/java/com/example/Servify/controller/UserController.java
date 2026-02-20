@@ -3,12 +3,7 @@ package com.example.Servify.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.Servify.dto.BackendResponse;
 import com.example.Servify.dto.UsersDto;
@@ -16,6 +11,7 @@ import com.example.Servify.model.SkillLevel;
 import com.example.Servify.service.UserService;
 
 @RestController
+@RequestMapping("/api/")
 public class UserController {
 
     private final UserService userService;
@@ -69,6 +65,10 @@ public class UserController {
                 .ok()
                 .body(new BackendResponse(true, "Deleted Successfully"));
     }
+
+
+
+
 
 
 }

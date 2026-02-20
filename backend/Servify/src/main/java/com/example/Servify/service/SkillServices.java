@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.Servify.dto.SkillDto;
-import com.example.Servify.exceptions.SkillDoesntExist;
 import com.example.Servify.model.Skill;
 import com.example.Servify.repository.SkillRepo;
 import com.example.Servify.repository.UserRepo;
@@ -15,15 +14,14 @@ import com.example.Servify.utils.DtoMapper;
 @Service
 public class SkillServices {
 
-    private final UserRepo userRepo;
 
     private final SkillRepo skillRepo;
-     
-    @Autowired DtoMapper dtoMapper;
 
-    public SkillServices(SkillRepo skillRepo, UserRepo userRepo) {
+    @Autowired
+    DtoMapper dtoMapper;
+
+    public SkillServices(SkillRepo skillRepo) {
         this.skillRepo = skillRepo;
-        this.userRepo = userRepo;
     }
 
     public List<SkillDto> findAllSkills() {
@@ -31,14 +29,18 @@ public class SkillServices {
         return skills.stream().map(skill -> dtoMapper.SkillToDto(skill)).toList();
     }
 
-    public SkillDto findSkillsBySkillId(String skillId) {
-        if (!skillRepo.existsById(skillId)) {
-            throw new SkillDoesntExist();
-        }
-        Skill skill = skillRepo.findSkillBySkillId(skillId);
+    public void addNewSkill(SkillDto skillDto) {
 
-        SkillDto skillDto = dtoMapper.SkillToDto(skill);
-        return skillDto;
+        if (skillRepo.existsByName(skillDto.getName())) {
+            System.out.println("Skipped adding skills again");
+            return;
+        }
+
+        Skill skill = new Skill();
+        skill.setName(skillDto.getName());
+        skill.setDescription(skillDto.getDescription());
+
+        skillRepo.save(skill);
     }
 
 
