@@ -29,7 +29,7 @@ public class UserService {
 
     public List<UsersDto> findAllUsers() {
         return userRepo.findAll().stream()
-                .map(user -> UserToDto(user, new UsersDto()))
+                .map(user -> DtoMapper.UserToDto(user, new UsersDto()))
                 .collect(Collectors.toList());
     }
 

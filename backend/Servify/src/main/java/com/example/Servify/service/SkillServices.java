@@ -24,14 +24,12 @@ public class SkillServices {
                 .toList();
     }
 
-    public SkillDto findSkillsBySkillId(String skillId) {
+    public Skill findSkillsBySkillId(String skillId) {
         if (!skillRepo.existsById(skillId)) {
             throw new SkillDoesntExist();
         }
         Skill skill = skillRepo.findSkillBySkillId(skillId);
-
-        SkillDto skillDto = DtoMapper.SkillToDto(skill, new SkillDto());
-        return skillDto;
+        return skill;
     }
 
 
