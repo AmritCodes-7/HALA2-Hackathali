@@ -1,35 +1,63 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import RoleSelection from './pages/RoleSelection';
+import ProOnboarding from './pages/ProOnboarding';
+import CustomerDashboard from './pages/CustomerDashboard';
+import ProDashboard from './pages/ProDashboard';
 
-function App() {
-  const [count, setCount] = useState(0)
+/**
+ * Dashboard Switcher — renders the correct dashboard based on the user's role.
+ */
+function DashboardSwitcher() {
+  const { role } = useAuth();
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+  if (role === 'pro') return <ProDashboard />;
+  if (role === 'customer') return <CustomerDashboard />;
+
+  // Fallback (shouldn't reach here due to ProtectedRoute)
+  return <Navigate to="/role-selection" replace />;
 }
 
-export default App
+export default function App() {
+  return (
+    <Routes>
+      {/* Public Routes */}
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+
+      {/* Auth-only, no role required */}
+      <Route
+        path="/role-selection"
+        element={
+          <ProtectedRoute requireRole={false}>
+            <RoleSelection />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/onboarding/pro"
+        element={
+          <ProtectedRoute requireRole={false}>
+            <ProOnboarding />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Auth + Role required */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute requireRole={true}>
+            <DashboardSwitcher />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Catch-all */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
