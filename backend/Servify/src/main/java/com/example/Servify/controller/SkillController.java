@@ -29,4 +29,5 @@ public class SkillController {
                 .status(HttpStatus.FOUND)
                 .body(new BackendResponse(true, skills));
     }
+
 }

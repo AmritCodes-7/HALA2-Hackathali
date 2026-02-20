@@ -58,7 +58,14 @@ public class UserController {
                 .body(new BackendResponse(true, "Added a new skill"));
     }
 
+    @DeleteMapping("/delete")
+    public ResponseEntity<BackendResponse> deleteUser() {
+        userService.deleteUser();
 
+        return ResponseEntity
+                .ok()
+                .body(new BackendResponse(true, "Deleted Successfully"));
+    }
 
 
 }

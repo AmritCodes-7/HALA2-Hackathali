@@ -16,7 +16,7 @@ public class UsersDto {
     private String username;
     private String role;
     private Date dateOfBirth;
-    private List<SkillLevel> skills;
+    private List<SkillLevelDto> skills;
     private String certificateUrl;
     private String phoneNumber;
 

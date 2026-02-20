@@ -43,8 +43,8 @@ public class UserService {
 
     }
 
-    public List<UsersDto> findUserWithSkill(String skillname) {
-        return userRepo.findBySkillsSkillName(skillname).stream()
+    public List<UsersDto> findUserWithSkill(String skillId) {
+        return userRepo.findBySkillsSkillId(skillId).stream()
                 .map(users -> DtoMapper.UserToDto(users, new UsersDto()))
                 .toList();
     }
@@ -56,10 +56,8 @@ public class UserService {
         user.getSkills().add(skill);
     }
 
-    public void deleteUserByUsername(String username) {
-        if (!userRepo.existsByUsername(username)) {
-            throw new UserDoesntExist();
-        }
+    public void deleteUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         userRepo.deleteByUsername(username);
     }

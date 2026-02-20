@@ -15,7 +15,7 @@ public interface UserRepo extends MongoRepository<Users, String> {
 
     public boolean existsByUsername(String username);
 
-    List<Users> findBySkillsSkillName(String skillname);
+    List<Users> findBySkillsSkillId(String skillId);
 
     void deleteByUsername(String username);
 }
