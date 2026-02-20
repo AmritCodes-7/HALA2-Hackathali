@@ -17,4 +17,5 @@ public interface UserRepo extends MongoRepository<Users, String> {
 
     List<Users> findBySkillsSkillName(String skillname);
 
+    void deleteByUsername(String username);
 }

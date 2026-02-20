@@ -1,5 +1,6 @@
 package com.example.Servify.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +34,7 @@ public class Users implements UserDetails {
 
     private Date dateOfBirth;
 
-    private List<SkillLevel> skills;
+    private List<SkillLevel> skills = new ArrayList<>();
 
     private String certificateUrl;
 

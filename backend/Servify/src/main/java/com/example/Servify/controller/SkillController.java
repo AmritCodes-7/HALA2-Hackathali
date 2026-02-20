@@ -1,6 +1,7 @@
 package com.example.Servify.controller;
 
 import com.example.Servify.dto.BackendResponse;
+import com.example.Servify.dto.SkillDto;
 import com.example.Servify.model.Skill;
 import com.example.Servify.service.SkillServices;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,7 @@ public class SkillController {
 
     @GetMapping("/skills")
     public ResponseEntity<BackendResponse> findAllSkills() {
-        List<Skill> skills = skillServices.findAllSkills();
+        List<SkillDto> skills = skillServices.findAllSkills();
 
         return ResponseEntity
                 .status(HttpStatus.FOUND)

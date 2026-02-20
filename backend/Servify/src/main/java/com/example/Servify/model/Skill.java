@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Document(collection = "Skill")
 public class Skill {
     @Id
-    private int skillId;
+    private String skillId;
 
     private String name;
 

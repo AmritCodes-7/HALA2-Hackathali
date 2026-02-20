@@ -1,7 +1,9 @@
 package com.example.Servify.service;
 
+import com.example.Servify.dto.SkillDto;
 import com.example.Servify.model.Skill;
 import com.example.Servify.repository.SkillRepo;
+import com.example.Servify.utils.DtoMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,8 +17,10 @@ public class SkillServices {
         this.skillRepo = skillRepo;
     }
 
-    public List<Skill> findAllSkills() {
-        return skillRepo.findAll();
+    public List<SkillDto> findAllSkills() {
+        return skillRepo.findAll().stream()
+                .map(skill -> DtoMapper.SkillToDto(skill, new SkillDto()))
+                .toList();
     }
 
 
