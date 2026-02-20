@@ -1,6 +1,5 @@
 package com.example.Servify.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,17 +12,15 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.client.RestTemplate;
 
 import com.example.Servify.jwt.JwtAuthFilter;
-import com.example.Servify.oauth.OAuthSuccessHandler;
 import com.example.Servify.service.MyUserDetailsService;
 
 
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
-
-    @Autowired OAuthSuccessHandler oAuthSuccessHandler;
 
     private final MyUserDetailsService myUserDetaisService;
     private final JwtAuthFilter jwtAuthFilter;
@@ -39,18 +36,16 @@ public class SecurityConfig {
             .cors(Customizer.withDefaults())
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers(
+                            "/",
                             "/api/v1/auth/login/**",
                             "/api/v1/auth/register/**",
                             "/oauth2/**",
                             "/login/**",
                             "/ws/**",
-                            "/**/*.html"
+                            "/**/*.html",
+                            "/api/image/**"
                     ).permitAll()
-                    .anyRequest().authenticated()
-            )
-            .oauth2Login(oauth -> oauth
-                    .successHandler(oAuthSuccessHandler)
-            )
+                    .anyRequest().authenticated())
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
 }
@@ -58,6 +53,11 @@ public class SecurityConfig {
     @Bean
     BCryptPasswordEncoder encoder(){
         return new BCryptPasswordEncoder(12);
+    }
+
+    @Bean
+    RestTemplate restTemplate(){
+        return new RestTemplate();
     }
 
     @Bean

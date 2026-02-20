@@ -1,7 +1,5 @@
 package com.example.Servify.utils;
 
-import com.example.Servify.dto.SkillLevelPyDto;
-import com.example.Servify.dto.UsersPyDto;
 import com.example.Servify.model.SkillLevel;
 import com.example.Servify.repository.SkillRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,22 +34,5 @@ public class DtoMapper {
         dto.setName(skill.getName());
         dto.setDescription(skill.getDescription());
         return dto;
-    }
-
-    public UsersPyDto UserToPyDto(Users users) {
-        UsersPyDto dto = new UsersPyDto();
-        dto.setUsername(users.getUsername());
-        dto.setCertificateUrl(users.getCertificateUrl());
-
-        List<SkillLevelPyDto> skillList = users.getSkills().stream()
-                .map(skills -> new SkillLevelPyDto(
-                        skillRepo.findSkillBySkillId(skills.getSkillId()).getName(),
-                        skills.getLevel()))
-                .toList();
-
-        dto.setSkills(skillList);
-
-        return dto;
-
     }
 }

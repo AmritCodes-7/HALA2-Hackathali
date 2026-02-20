@@ -40,11 +40,18 @@ public class Users implements UserDetails {
 
     private String phoneNumber;
 
+    private boolean isStaffValidated;
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(
                 new SimpleGrantedAuthority("ROLE_" + role)
         );
+    }
+
+    public void setIsStaffValidated(boolean isStaffValidated){
+        this.isStaffValidated = isStaffValidated;
     }
 
 
