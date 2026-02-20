@@ -38,10 +38,9 @@ public class AuthenticationController {
         return ResponseEntity.ok().body(new BackendResponse(true,message));
     }
 
-    @PostMapping(value = "/register/staff",
-    consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<BackendResponse> staffRegister(@RequestPart("user") Users user,@RequestPart("image") MultipartFile image) throws IOException {
-        String message = authService.registerStaff(user, image);
+    @PostMapping("/register/staff")
+    public ResponseEntity<BackendResponse> staffRegister(@RequestBody Users user) throws IOException {
+        String message = authService.registerStaff(user);
         return ResponseEntity.ok().body(new BackendResponse(true,message));
     }
 
