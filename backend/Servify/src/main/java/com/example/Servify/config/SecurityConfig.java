@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.client.RestTemplate;
 
 import com.example.Servify.jwt.JwtAuthFilter;
 import com.example.Servify.service.MyUserDetailsService;
@@ -42,7 +43,7 @@ public class SecurityConfig {
                             "/login/**",
                             "/ws/**",
                             "/**/*.html",
-                            "/image/**"
+                            "/api/image/**"
                     ).permitAll()
                     .anyRequest().authenticated())
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
@@ -52,6 +53,11 @@ public class SecurityConfig {
     @Bean
     BCryptPasswordEncoder encoder(){
         return new BCryptPasswordEncoder(12);
+    }
+
+    @Bean
+    RestTemplate restTemplate(){
+        return new RestTemplate();
     }
 
     @Bean

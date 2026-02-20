@@ -23,7 +23,8 @@ public class AuthService {
     BCryptPasswordEncoder encoder;
     JwtUtils jwtUtils;
     AuthenticationManager authManager;
-
+    
+     
     public AuthService(UserRepo userRepo, BCryptPasswordEncoder encoder, JwtUtils jwtUtils, AuthenticationManager authManager){
         
         this.userRepo = userRepo;
@@ -34,6 +35,7 @@ public class AuthService {
     }
 
     public String registerAdmin(Users user){
+
         if (user.getUsername().isBlank() || user.getPassword().isBlank()){
             throw new RuntimeException("please enter the details");
         }
