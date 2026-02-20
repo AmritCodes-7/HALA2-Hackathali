@@ -3,6 +3,7 @@ package com.example.Servify.model;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,13 +16,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Document(collection="Users")
+@Document(collection = "Users")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Users implements UserDetails{
-    
+public class Users implements UserDetails {
+
     @Id
     private String id;
 
@@ -32,12 +33,16 @@ public class Users implements UserDetails{
     private String role;
 
     private Date dateOfBirth;
-    
+
+    private Map<Skill, Integer> skills;
+
+    private String certificateUrl;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-         return List.of(
-        new SimpleGrantedAuthority("ROLE_" + role)
-    );
+        return List.of(
+                new SimpleGrantedAuthority("ROLE_" + role)
+        );
     }
 
 
