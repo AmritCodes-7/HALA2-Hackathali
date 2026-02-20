@@ -10,11 +10,12 @@ from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
 from src.prompt import fake_detection_prompt, fake_parser, FakeDetectionOutput
 from src.rag import query_rag
+from langchain_groq import ChatGroq
 
 load_dotenv()
-
-llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash",
+llm = ChatGroq(
+    model="llama-3.3-70b-versatile",
+    api_key=os.getenv("GROQ_API_KEY"),
     temperature=0.7,
 )
 
