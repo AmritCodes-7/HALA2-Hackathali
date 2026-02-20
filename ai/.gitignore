@@ -5,3 +5,6 @@ research
 
 .venv
 __pycache__
+
+test.py
+setup.py
