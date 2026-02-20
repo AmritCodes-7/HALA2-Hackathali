@@ -44,7 +44,8 @@ public class SecurityConfig {
                             "/oauth2/**",
                             "/login/**",
                             "/ws/**",
-                            "/**/*.html"
+                            "/**/*.html",
+                            "/image/**"
                     ).permitAll()
                     .anyRequest().authenticated()
             )
