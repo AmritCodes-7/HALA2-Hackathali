@@ -1,0 +1,33 @@
+# Core Utilities
+python-dotenv>=1.1.0
+pydantic>=2.7.0,<3.0.0
+typing-extensions>=4.11.0
+
+# Web Framework (FastAPI)
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+
+# LangChain (Modern Stable)
+langchain>=1.1.0,<2.0.0
+
+# OpenAI
+openai>=1.12.0
+langchain-openai>=0.1.7
+tiktoken>=0.7.0
+
+# Google Gemini
+google-generativeai>=0.5.4
+langchain-google-genai>=1.0.3
+
+# Vector Database (Pinecone)
+pinecone>=3.0.0
+langchain-pinecone>=0.1.3
+
+# HTTP & Async
+httpx>=0.27.0
+requests>=2.32.0
+aiohttp>=3.9.5
+
+# Optional Data Utilities
+numpy>=1.26.0
+pandas>=2.2.0
