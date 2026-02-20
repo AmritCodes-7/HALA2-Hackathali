@@ -76,5 +76,11 @@ public class UserService {
        return userToDto;
     }
 
+    public List<UsersDto> getStaffBySkill(String skillId) {
+        List<Users> usersWithSkills = userRepo.findBySkillId(skillId);
+
+        return usersWithSkills.stream().map(user -> dtoMapper.UserToDto(user)).toList();
+    }
+
 
 }

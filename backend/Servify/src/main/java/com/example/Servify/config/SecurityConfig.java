@@ -2,6 +2,7 @@ package com.example.Servify.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -17,59 +18,59 @@ import org.springframework.web.client.RestTemplate;
 import com.example.Servify.jwt.JwtAuthFilter;
 import com.example.Servify.service.MyUserDetailsService;
 
-
 @EnableWebSecurity
+@EnableScheduling  // needed for the stale-session cleanup @Scheduled in SessionService
 @Configuration
 public class SecurityConfig {
 
-    private final MyUserDetailsService myUserDetaisService;
+    private final MyUserDetailsService myUserDetailsService;
     private final JwtAuthFilter jwtAuthFilter;
-    public SecurityConfig( MyUserDetailsService myUserDetaisService, JwtAuthFilter jwtAuthFilter){
-        this.myUserDetaisService = myUserDetaisService;
+
+    public SecurityConfig(MyUserDetailsService myUserDetailsService, JwtAuthFilter jwtAuthFilter) {
+        this.myUserDetailsService = myUserDetailsService;
         this.jwtAuthFilter = jwtAuthFilter;
     }
-    
-    @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    return http
-            .csrf(csrf -> csrf.disable())
-            .cors(Customizer.withDefaults())
-            .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(
-                            "/",
-                            "/api/v1/auth/login/**",
-                            "/api/v1/auth/register/**",
-                            "/oauth2/**",
-                            "/login/**",
-                            "/ws/**",
-                            "/**/*.html",
-                            "/api/image/**"
-                    ).permitAll()
-                    .anyRequest().authenticated())
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-            .build();
-}
 
     @Bean
-    BCryptPasswordEncoder encoder(){
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .csrf(csrf -> csrf.disable())
+                .cors(Customizer.withDefaults())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/",
+                                "/api/v1/auth/login/**",
+                                "/api/v1/auth/register/**",
+                                "/oauth2/**",
+                                "/login/**",
+                                "/ws/**",
+                                "/**/*.html",
+                                "/api/image/**"
+                        ).permitAll()
+                        .anyRequest().authenticated())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
+    }
+
+    @Bean
+    BCryptPasswordEncoder encoder() {
         return new BCryptPasswordEncoder(12);
     }
 
     @Bean
-    RestTemplate restTemplate(){
+    RestTemplate restTemplate() {
         return new RestTemplate();
     }
 
     @Bean
-    AuthenticationProvider authenticationProvider(){
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(myUserDetaisService);
+    AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(myUserDetailsService);
         provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
         return provider;
     }
 
     @Bean
-    AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
+    AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-
 }

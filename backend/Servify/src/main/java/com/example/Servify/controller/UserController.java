@@ -16,6 +16,7 @@ import com.example.Servify.dto.UsersDto;
 import com.example.Servify.model.SkillLevel;
 import com.example.Servify.service.UserService;
 
+
 @RestController
 @RequestMapping("/api/v1")
 public class UserController {
@@ -80,5 +81,12 @@ public class UserController {
                 .ok()
                 .body(new BackendResponse(true, selfUser));
     }
+
+    @GetMapping("/find/staff/{skillId}")
+    public ResponseEntity<BackendResponse> findStaffBySkill(@PathVariable String skillId) {
+        List<UsersDto> userWithSkill = userService.findUserWithSkill(skillId);
+        return ResponseEntity.ok().body(new BackendResponse(true,userWithSkill));
+    }
+    
 
 }

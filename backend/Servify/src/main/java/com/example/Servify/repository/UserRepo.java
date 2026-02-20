@@ -1,12 +1,12 @@
 package com.example.Servify.repository;
 
+import java.util.List;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.example.Servify.model.Users;
-
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface UserRepo extends MongoRepository<Users, String> {
@@ -18,4 +18,7 @@ public interface UserRepo extends MongoRepository<Users, String> {
     List<Users> findBySkillsSkillId(String skillId);
 
     void deleteByUsername(String username);
+
+    @Query("{ 'skills.skillId': ?0 }")
+    List<Users> findBySkillId(String skillId);
 }
