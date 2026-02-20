@@ -1,0 +1,325 @@
+{
+  "info": {
+    "_postman_id": "891414cb-b784-4457-9835-b9eb942c8b0b",
+    "name": "Servify",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "51803664",
+    "_collection_link": "https://go.postman.co/collection/51803664-891414cb-b784-4457-9835-b9eb942c8b0b?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "auth",
+      "item": [
+        {
+          "name": "user_register",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\":\"abc\",\r\n    \"password\":\"abc\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/auth/register/user",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register",
+                "user"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "login_user",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\":\"abc\",\r\n    \"password\":\"abc\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/auth/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "staff_register",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "user",
+                  "value": "{\n  \"username\": \"staff1\",\n  \"password\": \"123456\"\n}",
+                  "type": "text",
+                  "uuid": "e1d521ca-9137-4387-bb73-55b59c71caae"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "uuid": "98ff9ed1-7e15-4546-9015-a2d588c1c91a",
+                  "src": "/C:/Users/shres/Downloads/HACKATHALI_TEMPLATE.png"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/auth/register/staff",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register",
+                "staff"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "add_certificate",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "user",
+                  "value": "{\n  \"username\": \"staff1\",\n  \"password\": \"123456\"\n}",
+                  "type": "text",
+                  "uuid": "e1d521ca-9137-4387-bb73-55b59c71caae"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "uuid": "98ff9ed1-7e15-4546-9015-a2d588c1c91a",
+                  "src": "/C:/Users/shres/Downloads/HACKATHALI_TEMPLATE.png"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8080/add/certificate",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "add",
+                "certificate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getImage",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "user",
+                  "value": "{\n  \"username\": \"staff1\",\n  \"password\": \"123456\"\n}",
+                  "type": "text",
+                  "uuid": "e1d521ca-9137-4387-bb73-55b59c71caae"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "uuid": "98ff9ed1-7e15-4546-9015-a2d588c1c91a",
+                  "src": "/C:/Users/shres/Downloads/HACKATHALI_TEMPLATE.png"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8080/image/69981a6ed7c97795b6c69407",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "image",
+                "69981a6ed7c97795b6c69407"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "user controller",
+      "item": [
+        {
+          "name": "users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/users/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "users",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "users_username",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "skillname",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJOYXJhIiwicm9sZXMiOlsiUk9MRV9ST0xFX1VTRVIiXSwiaWF0IjoxNzcxNTg2MDEyLCJleHAiOjE3NzQxNzgwMTJ9.1a_NOzD_jFbWkvdXGAEv8WVwI-vrb1Vz6SlswCmGd7A",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/Plumbing",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "Plumbing"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "addskills",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYmMiLCJyb2xlcyI6WyJST0xFX1JPTEVfVVNFUiJdLCJpYXQiOjE3NzE1ODcyNjksImV4cCI6MTc3NDE3OTI2OX0.q7ZRAlz_WZFWddIlL7UVafG9vLgkcx7qbI4KCGijWhM",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n   \"skillId\" : \"123\",\r\n    \"level\":\"5\"\r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/addskills",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "addskills"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ4eXoiLCJyb2xlcyI6WyJST0xFX1JPTEVfVVNFUiJdLCJpYXQiOjE3NzE1ODg2NjksImV4cCI6MTc3NDE4MDY2OX0.pgrHIUZpAf99KW-4ZTXOvpBRSfwqPOWULsVui79-19Q",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/delete",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "delete"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
