@@ -1,9 +1,11 @@
 package com.example.Servify.service;
 
-import com.example.Servify.exceptions.UserAlreadyExists;
+import com.example.Servify.exceptions.UserDoesntExist;
 import com.example.Servify.model.Users;
 import com.example.Servify.repository.UserRepo;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserService {
@@ -14,12 +16,17 @@ public class UserService {
         this.userRepo = userRepo;
     }
 
-    public void signupNewUser(Users user) {
+    public List<Users> findAllUsers() {
+        return userRepo.findAll();
+    }
 
-        if(userRepo.existsByUsername(user)){
-            throw new UserAlreadyExists();
+    public Users findByUsername(String username) {
+
+        if (!userRepo.existsByUsername(username)) {
+            throw new UserDoesntExist();
         }
-        userRepo.save(user);
+
+        return userRepo.findByUsername(username);
     }
 
 }

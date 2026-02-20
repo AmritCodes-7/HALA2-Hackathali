@@ -34,9 +34,12 @@ public class Users implements UserDetails {
 
     private Date dateOfBirth;
 
-    private Map<Skill, Integer> skills;
+
+    private List<SkillLevel> skills;
 
     private String certificateUrl;
+
+    private String phoneNumber;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
