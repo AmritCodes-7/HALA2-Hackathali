@@ -4,9 +4,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
 
 
-# -------------------------
 # Certificate Validation
-# -------------------------
 class SkillVerification(BaseModel):
     skill: str
     status: str
