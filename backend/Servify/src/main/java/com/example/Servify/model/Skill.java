@@ -1,5 +1,6 @@
 package com.example.Servify.model;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.AllArgsConstructor;
@@ -11,13 +12,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Document(collection="Skill")
+@Document(collection = "Skill")
 public class Skill {
-    
+    @Id
+    private int skillId;
+
     private String name;
 
     private String description;
-
-    private int mastery;
 
 }

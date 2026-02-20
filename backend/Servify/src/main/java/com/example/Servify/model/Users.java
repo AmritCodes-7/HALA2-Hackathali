@@ -21,21 +21,21 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Users implements UserDetails {
+    public class Users implements UserDetails {
 
-    @Id
-    private String id;
+        @Id
+        private String id;
 
-    private String username;
+        private String username;
 
-    private String password;
+        private String password;
 
-    private String role;
+        private String role;
 
-    private Date dateOfBirth;
+        private Date dateOfBirth;
 
 
-    private List<SkillLevel> skills;
+        private List<SkillLevel> skills;
 
     private String certificateUrl;
 
