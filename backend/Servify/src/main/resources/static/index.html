@@ -36,67 +36,121 @@
       .private {
         color: #38bdf8;
       }
+      .hidden {
+        display: none;
+      }
     </style>
   </head>
+
   <body>
     <h2>🩺 HospitalAgent WebSocket Tester</h2>
 
-    <div>
-      <input id="username" placeholder="Your username" />
-      <button onclick="connect()">Connect</button>
+    <!-- LOGIN SECTION -->
+    <div id="loginSection">
+      <h3>🔐 Login</h3>
+      <input id="loginUsername" placeholder="Username" />
+      <input id="loginPassword" type="password" placeholder="Password" />
+      <button onclick="login()">Login</button>
+      <div id="loginStatus"></div>
     </div>
 
     <hr />
 
-    <h3>Public Message</h3>
-    <input id="publicMsg" placeholder="Message to everyone" />
-    <button onclick="sendPublic()">Send Public</button>
+    <!-- CHAT SECTION -->
+    <div id="chatSection" class="hidden">
+      <h3>WebSocket</h3>
+      <button onclick="connect()">Connect WebSocket</button>
 
-    <h3>Private Message</h3>
-    <input id="receiver" placeholder="Receiver username" />
-    <input id="privateMsg" placeholder="Private message" />
-    <button onclick="sendPrivate()">Send Private</button>
+      <h3>Public Message</h3>
+      <input id="publicMsg" placeholder="Message to everyone" />
+      <button onclick="sendPublic()">Send Public</button>
 
-    <div id="chat"></div>
+      <h3>Private Message</h3>
+      <input id="receiver" placeholder="Receiver username" />
+      <input id="privateMsg" placeholder="Private message" />
+      <button onclick="sendPrivate()">Send Private</button>
+
+      <div id="chat"></div>
+    </div>
 
     <script>
       let stompClient = null;
-      let username = null;
+      let currentUser = null;
+
+      /* ================= LOGIN ================= */
+
+      function login() {
+        const username = document.getElementById("loginUsername").value;
+        const password = document.getElementById("loginPassword").value;
+
+        fetch("http://localhost:8080/api/v1/auth/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: username,
+            password: password,
+          }),
+        })
+          .then((res) => {
+            if (!res.ok) throw new Error("Login failed");
+            return res.json();
+          })
+          .then((data) => {
+            localStorage.setItem("jwt", data.token);
+            currentUser = username;
+
+            document.getElementById("loginStatus").innerText =
+              "✅ Logged in as " + username;
+
+            document.getElementById("chatSection").classList.remove("hidden");
+          })
+          .catch((err) => {
+            document.getElementById("loginStatus").innerText =
+              "❌ Invalid credentials";
+          });
+      }
+
+      /* ================= WEBSOCKET ================= */
 
       function connect() {
-        username = document.getElementById("username").value;
-        if (!username) {
-          alert("Enter username");
+        const token = localStorage.getItem("jwt");
+        if (!token) {
+          alert("Login first!");
           return;
         }
 
         const socket = new SockJS("http://localhost:8080/ws");
         stompClient = Stomp.over(socket);
 
-        stompClient.connect({}, () => {
-          log(`Connected as ${username}`);
+        stompClient.connect(
+          {
+            Authorization: "Bearer " + token,
+          },
+          () => {
+            log(`Connected as ${currentUser}`);
 
-          // Public messages
-          stompClient.subscribe("/public/all", (msg) => {
-            const body = JSON.parse(msg.body);
-            log(`[PUBLIC] ${body.sender}: ${body.content}`, "public");
-          });
+            stompClient.subscribe("/public/all", (msg) => {
+              const body = JSON.parse(msg.body);
+              log(`[PUBLIC] ${body.sender}: ${body.content}`, "public");
+            });
 
-          // Private messages
-          stompClient.subscribe("/user/queue/specific", (msg) => {
-            const body = JSON.parse(msg.body);
-            log(`[PRIVATE] ${body.sender}: ${body.content}`, "private");
-          });
-        });
+            stompClient.subscribe("/user/queue/specific", (msg) => {
+              const body = JSON.parse(msg.body);
+              log(`[PRIVATE] ${body.sender}: ${body.content}`, "private");
+            });
+          },
+        );
       }
 
       function sendPublic() {
         const content = document.getElementById("publicMsg").value;
+
         stompClient.send(
           "/app/chat",
           {},
           JSON.stringify({
-            sender: username,
             content: content,
           }),
         );
@@ -110,7 +164,6 @@
           "/app/private",
           {},
           JSON.stringify({
-            sender: username,
             receiver: receiver,
             content: content,
           }),
