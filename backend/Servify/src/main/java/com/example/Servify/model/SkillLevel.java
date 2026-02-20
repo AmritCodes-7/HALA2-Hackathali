@@ -1,6 +1,9 @@
 package com.example.Servify.model;
 
+import lombok.Data;
+
+@Data
 public class SkillLevel {
-    private Skill skill;
+    private String skillId;
     public int level;
 }
