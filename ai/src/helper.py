@@ -6,10 +6,8 @@ from PIL import Image
 from io import BytesIO
 from google import genai
 from google.genai import types
-from langchain.agents import create_agent
-from langchain.agents.middleware import SummarizationMiddleware
+from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.messages import HumanMessage
 from src.prompt import fake_detection_prompt, fake_parser, FakeDetectionOutput
 
 load_dotenv()
@@ -19,6 +17,7 @@ llm = ChatGoogleGenerativeAI(
     temperature=0.7,
 )
 
+MAX_MESSAGES = 20
 user_sessions: dict = {}
 
 
@@ -85,24 +84,45 @@ class FakeDetector:
         return fake_parser.parse(result.text)
 
 
-def get_user_agent(username: str):
+def get_user_history(username: str) -> list:
     if username not in user_sessions:
-        user_sessions[username] = create_agent(
-            model=llm,
-            tools=[],
-            middleware=[
-                SummarizationMiddleware(
-                    model=llm,
-                    trigger=[("tokens", 10000), ("messages", 20)],
-                    keep=("messages", 6),
-                    summary_prefix="[SUMMARY] ",
-                )
-            ],
-        )
+        user_sessions[username] = [
+            SystemMessage(
+                content="You are a helpful assistant. Remember details about the user across the conversation."
+            )
+        ]
     return user_sessions[username]
 
 
 def chat_with_user(username: str, message: str) -> str:
-    agent = get_user_agent(username)
-    response = agent.invoke({"messages": [HumanMessage(content=message)]})
-    return response["messages"][-1].content
+    history = get_user_history(username)
+
+    history.append(HumanMessage(content=message))
+
+    if len(history) > MAX_MESSAGES:
+        history_text = "\n".join(
+            [
+                f"{'User' if isinstance(m, HumanMessage) else 'AI'}: {m.content}"
+                for m in history[1:]  # skip system message
+            ]
+        )
+        summary = llm.invoke(
+            [
+                SystemMessage(
+                    content="Summarize this conversation briefly, keeping all key facts about the user."
+                ),
+                HumanMessage(content=history_text),
+            ]
+        )
+        user_sessions[username] = [
+            SystemMessage(
+                content=f"You are a helpful assistant. Previous conversation summary: {summary.content}"
+            )
+        ]
+        history = user_sessions[username]
+        history.append(HumanMessage(content=message))
+
+    response = llm.invoke(history)
+    history.append(AIMessage(content=response.content))
+
+    return response.content
