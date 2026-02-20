@@ -39,18 +39,27 @@ class TextExtractorModel:
         response = requests.get(validated_url)
         response.raise_for_status()
 
-        try:
-            Image.open(BytesIO(response.content)).convert("RGB")
-        except Exception as e:
-            raise ValueError(
-                "Failed to open image. Ensure the URL points to an image file."
-            ) from e
+        # detect file type
+        content_type = response.headers.get("Content-Type", "")
+        is_pdf = "pdf" in content_type or file_url.lower().endswith(".pdf")
+
+        if is_pdf:
+            mime_type = "application/pdf"
+        else:
+            # validate it's a real image
+            try:
+                Image.open(BytesIO(response.content)).convert("RGB")
+            except Exception as e:
+                raise ValueError(
+                    "Failed to open file. Ensure the URL points to an image or PDF."
+                ) from e
+            mime_type = "image/png"
 
         result = self.client.models.generate_content(
             model=self.model,
             contents=[
-                types.Part.from_bytes(data=response.content, mime_type="image/png"),
-                "Extract all text from this certificate image. Return only the extracted text, nothing else.",
+                types.Part.from_bytes(data=response.content, mime_type=mime_type),
+                "Extract all text from this certificate. Return only the extracted text, nothing else.",
             ],
         )
 
