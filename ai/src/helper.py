@@ -9,6 +9,7 @@ from google.genai import types
 from langchain.agents import create_agent
 from langchain.agents.middleware import SummarizationMiddleware
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.messages import HumanMessage
 from src.prompt import fake_detection_prompt, fake_parser, FakeDetectionOutput
 
 load_dotenv()
@@ -39,14 +40,12 @@ class TextExtractorModel:
         response = requests.get(validated_url)
         response.raise_for_status()
 
-        # detect file type
         content_type = response.headers.get("Content-Type", "")
         is_pdf = "pdf" in content_type or file_url.lower().endswith(".pdf")
 
         if is_pdf:
             mime_type = "application/pdf"
         else:
-            # validate it's a real image
             try:
                 Image.open(BytesIO(response.content)).convert("RGB")
             except Exception as e:
@@ -93,8 +92,10 @@ def get_user_agent(username: str):
             tools=[],
             middleware=[
                 SummarizationMiddleware(
-                    llm=llm,
-                    max_tokens=1000,
+                    model=llm,
+                    trigger=[("tokens", 10000), ("messages", 20)],
+                    keep=("messages", 6),
+                    summary_prefix="[SUMMARY] ",
                 )
             ],
         )
@@ -103,5 +104,5 @@ def get_user_agent(username: str):
 
 def chat_with_user(username: str, message: str) -> str:
     agent = get_user_agent(username)
-    response = agent.invoke({"input": message})
-    return response["output"]
+    response = agent.invoke({"messages": [HumanMessage(content=message)]})
+    return response["messages"][-1].content
