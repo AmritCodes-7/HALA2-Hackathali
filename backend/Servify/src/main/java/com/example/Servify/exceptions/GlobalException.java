@@ -1,12 +1,13 @@
 package com.example.Servify.exceptions;
 
-import com.example.Servify.dto.BackendResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice
+import com.example.Servify.dto.BackendResponse;
+
+@ControllerAdvice
 public class GlobalException {
 
     @ExceptionHandler(UserDoesntExist.class)
@@ -21,5 +22,12 @@ public class GlobalException {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(new BackendResponse(false, "Skill doesnt exists"));
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<BackendResponse> runtimeExceptionHandler(RuntimeException e) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new BackendResponse(false, e.getMessage()));
     }
 }

@@ -1,12 +1,13 @@
 package com.example.Servify.dto;
 
+import java.util.Date;
+import java.util.List;
+
 import com.example.Servify.model.SkillLevel;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Date;
-import java.util.List;
 
 @Data
 @NoArgsConstructor

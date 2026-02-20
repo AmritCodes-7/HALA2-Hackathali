@@ -1,16 +1,19 @@
 package com.example.Servify.controller;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.Servify.dto.BackendResponse;
 import com.example.Servify.dto.UsersDto;
 import com.example.Servify.model.SkillLevel;
-import com.example.Servify.model.Users;
 import com.example.Servify.service.UserService;
-import org.springframework.http.HttpRange;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 public class UserController {
@@ -26,7 +29,7 @@ public class UserController {
         List<UsersDto> users = userService.findAllUsers();
 
         return ResponseEntity
-                .status(HttpStatus.FOUND)
+                .ok()
                 .body(new BackendResponse(true, users));
     }
 
@@ -35,7 +38,7 @@ public class UserController {
         UsersDto user = userService.findByUsername(username);
 
         return ResponseEntity
-                .status(HttpStatus.FOUND)
+                .ok()
                 .body(new BackendResponse(true, user));
     }
 
@@ -45,7 +48,7 @@ public class UserController {
         List<UsersDto> users = userService.findUserWithSkill(skillname);
 
         return ResponseEntity
-                .status(HttpStatus.FOUND)
+                .ok()
                 .body(new BackendResponse(true, users));
     }
 
