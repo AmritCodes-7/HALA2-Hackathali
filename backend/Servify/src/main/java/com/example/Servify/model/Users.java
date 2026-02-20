@@ -1,11 +1,13 @@
 package com.example.Servify.model;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import lombok.AllArgsConstructor;
@@ -27,11 +29,16 @@ public class Users implements UserDetails{
 
     private String password;
 
-    private List<Skill> skills;
+    private String role;
 
+    private Date dateOfBirth;
+    
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAuthorities'");
+         return List.of(
+        new SimpleGrantedAuthority("ROLE_" + role)
+    );
     }
+
+
 }
