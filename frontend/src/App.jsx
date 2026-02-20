@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import ChatBot from './components/ChatBot';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import RoleSelection from './pages/RoleSelection';
@@ -14,50 +15,57 @@ import ProDashboard from './pages/ProDashboard';
 function DashboardSwitcher() {
   const { role } = useAuth();
 
-  if (role === 'pro') return <ProDashboard />;
-  if (role === 'customer') return <CustomerDashboard />;
+  if (role === 'staff' || role === 'pro') return <ProDashboard />;
+  if (role === 'user' || role === 'customer') return <CustomerDashboard />;
 
   // Fallback (shouldn't reach here due to ProtectedRoute)
   return <Navigate to="/role-selection" replace />;
 }
 
 export default function App() {
+  const { user } = useAuth();
+
   return (
-    <Routes>
-      {/* Public Routes */}
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
+    <>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
 
-      {/* Auth-only, no role required */}
-      <Route
-        path="/role-selection"
-        element={
-          <ProtectedRoute requireRole={false}>
-            <RoleSelection />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/onboarding/pro"
-        element={
-          <ProtectedRoute requireRole={false}>
-            <ProOnboarding />
-          </ProtectedRoute>
-        }
-      />
+        {/* Auth-only, no role required */}
+        <Route
+          path="/role-selection"
+          element={
+            <ProtectedRoute requireRole={false}>
+              <RoleSelection />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/onboarding/pro"
+          element={
+            <ProtectedRoute requireRole={false}>
+              <ProOnboarding />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* Auth + Role required */}
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute requireRole={true}>
-            <DashboardSwitcher />
-          </ProtectedRoute>
-        }
-      />
+        {/* Auth + Role required */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute requireRole={true}>
+              <DashboardSwitcher />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* Catch-all */}
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        {/* Catch-all */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+
+      {/* Floating AI Chatbot — visible on all pages for logged-in users */}
+      {user && <ChatBot />}
+    </>
   );
 }

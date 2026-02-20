@@ -396,15 +396,15 @@ export default function Home() {
                 The fastest way to find trusted, background-checked home service professionals in your area.
               </p>
               <div className="space-y-2 text-sm text-gray-400">
-                <p className="flex items-center gap-2"><FiPhone className="w-4 h-4" /> 1-800-FIX-IT00</p>
-                <p className="flex items-center gap-2"><FiMail className="w-4 h-4" /> hello@fixit.app</p>
-                <p className="flex items-center gap-2"><FiMapPin className="w-4 h-4" /> Austin, TX 78701</p>
+                <p className="flex items-center gap-2"><FiPhone className="w-4 h-4" /> +977 9864569197</p>
+                <p className="flex items-center gap-2"><FiMail className="w-4 h-4" /> servify@info.com</p>
+                <p className="flex items-center gap-2"><FiMapPin className="w-4 h-4" /> Kathmandu, Nepal</p>
               </div>
               <div className="flex gap-3 mt-4">
                 {[FaTwitter, FaFacebookF, FaInstagram, FaLinkedinIn].map((Icon, i) => (
                   <a
                     key={i}
-                    href="#"
+                    href="http://localhost:5173/"
                     className="w-9 h-9 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
                   >
                     <Icon className="w-4 h-4" />

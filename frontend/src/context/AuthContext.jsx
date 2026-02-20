@@ -98,9 +98,14 @@ export function AuthProvider({ children }) {
   };
 
   // ── Email/Password Registration ──
-  const registerWithCredentials = async (name, email, password) => {
+  // Routes to /register/user or /register/staff based on the role field
+  const registerWithCredentials = async (registrationData) => {
     try {
-      const res = await api.post('/auth/register', { name, email, password });
+      const { role: selectedRole, ...fields } = registrationData;
+      const endpoint =
+        selectedRole === 'staff' ? '/register/staff' : '/register/user';
+
+      const res = await api.post(endpoint, { ...fields, role: selectedRole });
       const { token, user: userData } = res.data;
       localStorage.setItem('accessToken', token);
       setUser(userData);

@@ -2,7 +2,18 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { FcGoogle } from 'react-icons/fc';
-import { FiEye, FiEyeOff, FiUser, FiMail, FiLock, FiX } from 'react-icons/fi';
+import {
+  FiEye,
+  FiEyeOff,
+  FiUser,
+  FiMail,
+  FiLock,
+  FiX,
+  FiCalendar,
+  FiPhone,
+  FiShield,
+  FiBriefcase,
+} from 'react-icons/fi';
 
 export default function Login() {
   const {
@@ -19,8 +30,11 @@ export default function Login() {
 
   // Form fields
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  // const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [selectedRole, setSelectedRole] = useState('user');
 
   // If already logged in, redirect
   if (user) {
@@ -29,8 +43,17 @@ export default function Login() {
   }
 
   const handleGoogleLogin = () => {
-    // Redirects to Spring Boot backend OAuth endpoint
     signInWithGoogle();
+  };
+
+  const resetForm = () => {
+    setName('');
+    // setEmail('');
+    setPassword('');
+    setDateOfBirth('');
+    setPhoneNumber('');
+    setSelectedRole('user');
+    setError('');
   };
 
   const handleSubmit = async (e) => {
@@ -40,9 +63,16 @@ export default function Login() {
 
     try {
       if (activeTab === 'login') {
-        await loginWithCredentials(email, password);
+        await loginWithCredentials(name, password);
       } else {
-        await registerWithCredentials(name, email, password);
+        await registerWithCredentials({
+          name,
+          // email,
+          password,
+          role: selectedRole,
+          dateOfBirth,
+          phoneNumber,
+        });
       }
       navigate('/dashboard');
     } catch (err) {
@@ -58,14 +88,33 @@ export default function Login() {
     }
   };
 
+  const roleOptions = [
+    {
+      id: 'user',
+      label: 'User',
+      description: 'Find & book services',
+      icon: FiUser,
+      activeColor: 'border-blue-500 bg-blue-50 text-blue-700',
+      iconColor: 'text-blue-500',
+    },
+    {
+      id: 'staff',
+      label: 'Staff',
+      description: 'Offer your services',
+      icon: FiBriefcase,
+      activeColor: 'border-orange-500 bg-orange-50 text-orange-700',
+      iconColor: 'text-orange-500',
+    },
+  ];
+
   return (
-    <div className="min-h-screen relative flex items-center justify-center px-4">
+    <div className="min-h-screen relative flex items-center justify-center px-4 py-12">
       {/* Background */}
       <div className="fixed inset-0 bg-gradient-to-br from-blue-700 via-blue-800 to-indigo-900" />
       <div className="fixed inset-0 bg-black/30" />
 
       {/* Card */}
-      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 animate-in fade-in zoom-in-95 duration-300">
+      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 animate-in fade-in zoom-in-95 duration-300 max-h-[95vh] overflow-y-auto">
         {/* Close Button */}
         <button
           onClick={() => navigate('/')}
@@ -77,7 +126,7 @@ export default function Login() {
         {/* Brand */}
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-gray-900">
-            Fix<span className="text-orange-500">It</span>
+            Servi<span className="text-orange-500">fy</span>
           </h1>
           <p className="text-sm text-gray-500 mt-1">
             {activeTab === 'login' ? 'Welcome back!' : 'Create your free account today.'}
@@ -130,26 +179,93 @@ export default function Login() {
           </div>
         )}
 
+        {/* ── Role Selector (signup only) ── */}
+        {activeTab === 'signup' && (
+          <div className="mb-5">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              I want to join as
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              {roleOptions.map((opt) => (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => setSelectedRole(opt.id)}
+                  className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 text-left ${
+                    selectedRole === opt.id
+                      ? opt.activeColor
+                      : 'border-gray-200 bg-white hover:border-gray-300 text-gray-600'
+                  }`}
+                >
+                  <opt.icon className={`w-5 h-5 shrink-0 ${
+                    selectedRole === opt.id ? opt.iconColor : 'text-gray-400'
+                  }`} />
+                  <div>
+                    <p className="text-sm font-semibold">{opt.label}</p>
+                    <p className="text-xs opacity-70">{opt.description}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {activeTab === 'signup' && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Name</label>
-              <div className="relative">
-                <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Jane Smith"
-                  required
-                  className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-gray-400"
-                />
+          {/* ── Signup-only fields ── */}
+            {/* userame */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Username</label>
+                <div className="relative">
+                  <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="jane"
+                    required
+                    className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-gray-400"
+                  />
+                </div>
               </div>
-            </div>
+          {activeTab === 'signup' && (
+            <>
+              {/* Date of Birth */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Date of Birth</label>
+                <div className="relative">
+                  <FiCalendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    type="date"
+                    value={dateOfBirth}
+                    onChange={(e) => setDateOfBirth(e.target.value)}
+                    required
+                    max={new Date().toISOString().split('T')[0]}
+                    className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-700"
+                  />
+                </div>
+              </div>
+
+              {/* Phone Number */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Phone Number</label>
+                <div className="relative">
+                  <FiPhone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    type="tel"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    placeholder="+977 98XXXXXXXX"
+                    required
+                    className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-gray-400"
+                  />
+                </div>
+              </div>
+            </>
           )}
 
-          <div>
+          {/* ── Email (both tabs) ── */}
+          {/* <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Email Address</label>
             <div className="relative">
               <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -162,8 +278,10 @@ export default function Login() {
                 className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-gray-400"
               />
             </div>
-          </div>
+          </div> */}
+        
 
+          {/* ── Password (both tabs) ── */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
             <div className="relative">
@@ -207,7 +325,7 @@ export default function Login() {
           <button
             onClick={() => {
               setActiveTab(activeTab === 'login' ? 'signup' : 'login');
-              setError('');
+              resetForm();
             }}
             className="font-semibold text-blue-600 hover:text-blue-800 transition-colors"
           >
