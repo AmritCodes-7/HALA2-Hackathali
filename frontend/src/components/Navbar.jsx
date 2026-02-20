@@ -20,6 +20,9 @@ export default function Navbar() {
     navigate('/');
   };
 
+  // Determine correct dashboard path based on role
+  const dashboardPath = role === 'staff' ? '/staff-dashboard' : '/user-home';
+
   const navLinks = [
     { label: 'Services', href: '/#services' },
     { label: 'How It Works', href: '/#how-it-works' },
@@ -63,13 +66,11 @@ export default function Navbar() {
                   onClick={() => setProfileOpen(!profileOpen)}
                   className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors"
                 >
-                  <img
-                    src={user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName || 'U'}&background=f97316&color=fff`}
-                    alt="Avatar"
-                    className="w-8 h-8 rounded-full ring-2 ring-orange-500/20"
-                  />
+                  <div className="w-8 h-8 rounded-full ring-2 ring-orange-500/20 bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white text-sm font-bold">
+                    {(user.username || user.displayName || 'U').charAt(0).toUpperCase()}
+                  </div>
                   <span className="text-sm font-medium text-gray-700 max-w-[120px] truncate">
-                    {user.displayName || 'User'}
+                    {user.username || user.displayName || 'User'}
                   </span>
                   <FiChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
                 </button>
@@ -79,8 +80,9 @@ export default function Navbar() {
                     <div className="fixed inset-0 z-40" onClick={() => setProfileOpen(false)} />
                     <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in slide-in-from-top-2">
                       <div className="px-4 py-3 border-b border-gray-50">
-                        <p className="text-sm font-semibold text-gray-900">{user.displayName}</p>
-                        <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {user.username || user.displayName}
+                        </p>
                         {role && (
                           <span className="mt-1 inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-orange-50 text-orange-600 capitalize">
                             {role}
@@ -88,7 +90,7 @@ export default function Navbar() {
                         )}
                       </div>
                       <Link
-                        to="/dashboard"
+                        to={dashboardPath}
                         onClick={() => setProfileOpen(false)}
                         className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                       >
@@ -152,7 +154,7 @@ export default function Navbar() {
             {user ? (
               <>
                 <Link
-                  to="/dashboard"
+                  to={dashboardPath}
                   onClick={() => setMobileOpen(false)}
                   className="block px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50"
                 >

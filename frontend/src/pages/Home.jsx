@@ -134,15 +134,15 @@ export default function Home() {
 
           {/* Heading */}
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-center text-white leading-tight">
-            Find Trusted Home Service
+            Book Home Service
             <br />
-            Pros — <span className="text-orange-400">Fast.</span>
+            Providers — <span className="text-orange-400">At Your Fingertips.</span>
           </h1>
 
           <p className="mt-6 text-lg md:text-xl text-center text-blue-100 max-w-2xl mx-auto leading-relaxed">
-            Book plumbers, electricians, cleaners &amp; more in minutes.
+            The Uber for Plumbers, Electricians, Cleaners &amp; more.
             <br className="hidden sm:block" />
-            Background-checked, Insured, and rated 4.9★ by 10,000+ homeowners.
+            Verified professionals, instant booking, and service at your doorstep.
           </p>
 
           {/* Search Bar */}
@@ -361,7 +361,7 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              to={user ? '/dashboard' : '/login'}
+              to={user ? (user.role === 'staff' ? '/staff-dashboard' : '/user-home') : '/login'}
               className="inline-flex items-center gap-2 px-8 py-4 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-xl transition-all shadow-xl shadow-orange-500/30 hover:shadow-orange-500/50 hover:-translate-y-0.5"
             >
               Get Started for Free <FiArrowRight className="w-5 h-5" />

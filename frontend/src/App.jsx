@@ -1,71 +1,40 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import ChatBot from './components/ChatBot';
 import Home from './pages/Home';
-import Login from './pages/Login';
-import RoleSelection from './pages/RoleSelection';
-import ProOnboarding from './pages/ProOnboarding';
-import CustomerDashboard from './pages/CustomerDashboard';
-import ProDashboard from './pages/ProDashboard';
-
-/**
- * Dashboard Switcher — renders the correct dashboard based on the user's role.
- */
-function DashboardSwitcher() {
-  const { role } = useAuth();
-
-  if (role === 'staff' || role === 'pro') return <ProDashboard />;
-  if (role === 'user' || role === 'customer') return <CustomerDashboard />;
-
-  // Fallback (shouldn't reach here due to ProtectedRoute)
-  return <Navigate to="/role-selection" replace />;
-}
+import LoginPage from './features/auth/LoginPage';
+import StaffDashboard from './features/staff/StaffDashboard';
+import UserHome from './features/user/UserHome';
 
 export default function App() {
-  const { user } = useAuth();
-
   return (
-    <>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
+    <Routes>
+      {/* Public Routes */}
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<LoginPage />} />
 
-        {/* Auth-only, no role required */}
-        <Route
-          path="/role-selection"
-          element={
-            <ProtectedRoute requireRole={false}>
-              <RoleSelection />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/onboarding/pro"
-          element={
-            <ProtectedRoute requireRole={false}>
-              <ProOnboarding />
-            </ProtectedRoute>
-          }
-        />
+      {/* Protected: Staff Dashboard */}
+      <Route
+        path="/staff-dashboard"
+        element={
+          <ProtectedRoute allowedRoles={['staff']}>
+            <StaffDashboard />
+          </ProtectedRoute>
+        }
+      />
 
-        {/* Auth + Role required */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute requireRole={true}>
-              <DashboardSwitcher />
-            </ProtectedRoute>
-          }
-        />
+      {/* Protected: User Home */}
+      <Route
+        path="/user-home"
+        element={
+          <ProtectedRoute allowedRoles={['user']}>
+            <UserHome />
+          </ProtectedRoute>
+        }
+      />
 
-        {/* Catch-all */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-
-      {/* Floating AI Chatbot — visible on all pages for logged-in users */}
-      {user && <ChatBot />}
-    </>
+      {/* Catch-all */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }

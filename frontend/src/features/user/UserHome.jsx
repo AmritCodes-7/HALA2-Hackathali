@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import Navbar from '../components/Navbar';
-import { useAuth } from '../context/AuthContext';
+import Navbar from '../../components/Navbar';
+import { useAuth } from '../../context/AuthContext';
 import {
   FiSearch,
   FiMapPin,
@@ -108,13 +108,14 @@ const NEARBY_PROS = [
   },
 ];
 
-export default function CustomerDashboard() {
+export default function UserHome() {
   const { user } = useAuth();
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredPros = NEARBY_PROS.filter((pro) => {
-    const matchesCategory = activeCategory === 'all' || pro.category === activeCategory;
+    const matchesCategory =
+      activeCategory === 'all' || pro.category === activeCategory;
     const matchesSearch =
       pro.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       pro.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -131,9 +132,11 @@ export default function CustomerDashboard() {
           <div className="max-w-6xl mx-auto">
             <p className="text-blue-200 text-sm mb-1">Welcome back,</p>
             <h1 className="text-2xl md:text-3xl font-bold text-white mb-4">
-              {user?.displayName || 'Customer'} 👋
+              {user?.username || user?.displayName || 'Customer'} 👋
             </h1>
-            <p className="text-blue-100 text-sm">Find the perfect service professional near you.</p>
+            <p className="text-blue-100 text-sm">
+              Find the perfect service professional near you.
+            </p>
 
             {/* Search Bar */}
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
@@ -158,15 +161,16 @@ export default function CustomerDashboard() {
           {/* ── Map Placeholder ── */}
           <div className="mb-8 rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
             <div className="relative h-64 bg-gradient-to-br from-emerald-100 via-blue-100 to-indigo-100">
-              {/* Fake map overlay */}
-              <div className="absolute inset-0" style={{
-                backgroundImage: `
-                  linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
-                  linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px)
-                `,
-                backgroundSize: '40px 40px',
-              }} />
-              {/* Map pins */}
+              <div
+                className="absolute inset-0"
+                style={{
+                  backgroundImage: `
+                    linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px)
+                  `,
+                  backgroundSize: '40px 40px',
+                }}
+              />
               {[
                 { top: '30%', left: '25%' },
                 { top: '50%', left: '45%' },
@@ -185,13 +189,16 @@ export default function CustomerDashboard() {
                   <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-3 h-3 bg-blue-600 rotate-45 -translate-y-1.5" />
                 </div>
               ))}
-              {/* Center badge */}
               <div className="absolute top-4 left-4 bg-white rounded-xl shadow-md px-4 py-2 flex items-center gap-2">
                 <FiMapPin className="w-4 h-4 text-blue-600" />
-                <span className="text-sm font-medium text-gray-700">Your Area</span>
+                <span className="text-sm font-medium text-gray-700">
+                  Your Area
+                </span>
               </div>
               <div className="absolute bottom-4 right-4 bg-white rounded-xl shadow-md px-4 py-2">
-                <span className="text-xs font-medium text-gray-500">Google Maps Integration</span>
+                <span className="text-xs font-medium text-gray-500">
+                  Google Maps Integration
+                </span>
               </div>
             </div>
           </div>
@@ -217,8 +224,12 @@ export default function CustomerDashboard() {
           {/* ── Section Title ── */}
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Nearby Service Providers</h2>
-              <p className="text-sm text-gray-500 mt-1">{filteredPros.length} professionals found</p>
+              <h2 className="text-xl font-bold text-gray-900">
+                Nearby Service Providers
+              </h2>
+              <p className="text-sm text-gray-500 mt-1">
+                {filteredPros.length} professionals found
+              </p>
             </div>
           </div>
 
@@ -229,13 +240,14 @@ export default function CustomerDashboard() {
                 key={pro.id}
                 className="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
               >
-                {/* Image placeholder */}
                 <div className="relative h-40 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
                   <div className="absolute inset-0 flex items-center justify-center">
                     <FiUser className="w-10 h-10 text-gray-300" />
                   </div>
                   <div className="absolute top-3 left-3">
-                    <span className={`px-3 py-1 ${pro.availColor} text-white text-xs font-semibold rounded-full shadow-md`}>
+                    <span
+                      className={`px-3 py-1 ${pro.availColor} text-white text-xs font-semibold rounded-full shadow-md`}
+                    >
                       {pro.availability}
                     </span>
                   </div>
@@ -250,27 +262,38 @@ export default function CustomerDashboard() {
                   <div className="flex items-start justify-between mb-1">
                     <div>
                       <h3 className="font-bold text-gray-900">{pro.name}</h3>
-                      <p className="text-sm text-blue-600 font-medium">{pro.title}</p>
+                      <p className="text-sm text-blue-600 font-medium">
+                        {pro.title}
+                      </p>
                     </div>
                     <div className="flex items-center gap-1 text-sm shrink-0">
                       <FiStar className="w-4 h-4 text-amber-400 fill-amber-400" />
                       <span className="font-semibold">{pro.rating}</span>
-                      <span className="text-gray-400 text-xs">({pro.reviews})</span>
+                      <span className="text-gray-400 text-xs">
+                        ({pro.reviews})
+                      </span>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between mt-2 mb-3">
                     <span className="text-xs text-gray-500 flex items-center gap-1">
-                      <FiClock className="w-3 h-3" /> {pro.jobs.toLocaleString()} jobs
+                      <FiClock className="w-3 h-3" />{' '}
+                      {pro.jobs.toLocaleString()} jobs
                     </span>
                     <span className="text-lg font-bold text-gray-900">
-                      ${pro.rate}<span className="text-xs font-normal text-gray-400">/hr</span>
+                      ${pro.rate}
+                      <span className="text-xs font-normal text-gray-400">
+                        /hr
+                      </span>
                     </span>
                   </div>
 
                   <div className="flex flex-wrap gap-1.5 mb-4">
                     {pro.badges.map((badge) => (
-                      <span key={badge} className="px-2 py-0.5 text-xs font-medium rounded-full bg-gray-50 text-gray-500 border border-gray-100">
+                      <span
+                        key={badge}
+                        className="px-2 py-0.5 text-xs font-medium rounded-full bg-gray-50 text-gray-500 border border-gray-100"
+                      >
                         {badge}
                       </span>
                     ))}
@@ -292,8 +315,12 @@ export default function CustomerDashboard() {
           {filteredPros.length === 0 && (
             <div className="text-center py-20">
               <FiSearch className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-700 mb-2">No professionals found</h3>
-              <p className="text-sm text-gray-500">Try adjusting your search or filter criteria.</p>
+              <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                No professionals found
+              </h3>
+              <p className="text-sm text-gray-500">
+                Try adjusting your search or filter criteria.
+              </p>
             </div>
           )}
         </div>

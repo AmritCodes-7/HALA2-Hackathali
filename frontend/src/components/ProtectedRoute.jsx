@@ -5,21 +5,15 @@ import { useAuth } from '../context/AuthContext';
  * ProtectedRoute — guards routes behind authentication + optional role checks.
  *
  * Props:
- *   children       — the page to render if checks pass
- *   requireRole    — if true, user must have a role assigned (default: true)
- *   allowedRoles   — array of roles that can access this route, e.g. ['customer', 'pro']
+ *   children     — the page to render if checks pass
+ *   allowedRoles — array of roles that can access this route, e.g. ['staff', 'user']
  *
  * Redirect logic:
  *   1. Not authenticated → /login
- *   2. Authenticated but no role (and requireRole is true) → /role-selection
- *   3. Has role but not in allowedRoles → /dashboard (unauthorized)
- *   4. All good → render children
+ *   2. Has role but not in allowedRoles → redirect to correct dashboard
+ *   3. All good → render children
  */
-export default function ProtectedRoute({
-  children,
-  requireRole = true,
-  allowedRoles = null,
-}) {
+export default function ProtectedRoute({ children, allowedRoles = null }) {
   const { user, role, loading } = useAuth();
 
   if (loading) {
@@ -33,21 +27,16 @@ export default function ProtectedRoute({
     );
   }
 
-  // 1. Not authenticated
+  // Not authenticated
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  // 2. Authenticated but no role assigned yet
-  if (requireRole && !role) {
-    return <Navigate to="/role-selection" replace />;
-  }
-
-  // 3. Role doesn't match allowed list
+  // Role doesn't match allowed list — redirect to correct dashboard
   if (allowedRoles && !allowedRoles.includes(role)) {
-    return <Navigate to="/dashboard" replace />;
+    const redirect = role === 'staff' ? '/staff-dashboard' : '/user-home';
+    return <Navigate to={redirect} replace />;
   }
 
-  // 4. All checks passed
   return children;
 }
