@@ -61,7 +61,6 @@ export default function ProOnboarding() {
         isAvailable,
         certificationUploaded: !!certFile,
         onboardingCompleted: true,
-        onboardedAt: new Date().toISOString(),
       });
       navigate('/dashboard');
     } catch (error) {

@@ -114,7 +114,7 @@ export default function Home() {
       <Navbar />
 
       {/* ═══════════════ HERO SECTION ═══════════════ */}
-      <section className="relative pt-16 overflow-hidden">
+      <section id="services" className="relative pt-16 overflow-hidden">
         {/* Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800" />
         <div className="absolute inset-0 opacity-10">
@@ -389,7 +389,7 @@ export default function Home() {
                   </svg>
                 </div>
                 <span className="text-xl font-bold text-white">
-                  Fix<span className="text-orange-500">It</span>
+                  Servi<span className="text-orange-500">fy</span>
                 </span>
               </div>
               <p className="text-sm text-gray-400 mb-4 leading-relaxed">

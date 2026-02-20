@@ -24,7 +24,6 @@ export default function Navbar() {
     { label: 'Services', href: '/#services' },
     { label: 'How It Works', href: '/#how-it-works' },
     { label: 'Find a Pro', href: '/#pros' },
-    { label: 'About', href: '/#about' },
   ];
 
   return (
@@ -39,7 +38,7 @@ export default function Navbar() {
               </svg>
             </div>
             <span className="text-xl font-bold text-gray-900">
-              Fix<span className="text-orange-500">It</span>
+              Servi<span className="text-orange-500">fy</span>
             </span>
           </Link>
 

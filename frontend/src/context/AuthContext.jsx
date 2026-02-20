@@ -1,75 +1,113 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { auth, googleProvider, db } from '../config/firebase';
+import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import api from '../api/axiosInstance';
 
 const AuthContext = createContext(null);
 
 /**
  * AuthProvider — wraps the app and provides authentication + role state.
  *
+ * Authentication flow (Spring Boot backend OAuth):
+ * 1. User clicks "Continue with Google" → redirects to Spring Boot's OAuth endpoint
+ * 2. Spring Boot handles OAuth with Google, creates/finds user, generates JWT
+ * 3. Spring Boot redirects back to frontend with JWT token as a query param
+ * 4. Frontend stores JWT in localStorage and fetches user profile from backend
+ *
  * Exposes:
- *   user     — Firebase Auth user object (or null)
- *   role     — 'customer' | 'pro' | null  (fetched from Firestore users/{uid})
- *   loading  — true while auth state is being determined
- *   signInWithGoogle()  — triggers Google OAuth popup
- *   logout()            — signs out and clears state
- *   updateRole(newRole) — writes role to Firestore and updates local state
+ *   user       — user profile object (or null)
+ *   role       — 'customer' | 'pro' | null
+ *   loading    — true while auth state is being determined
+ *   signInWithGoogle()   — redirects to backend OAuth endpoint
+ *   loginWithCredentials(email, password) — email/password login via backend
+ *   registerWithCredentials(name, email, password) — register via backend
+ *   logout()             — clears token and user state
+ *   updateRole(newRole, additionalData) — sets role via backend API
  */
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // ── Fetch user profile (role) from Firestore ──
-  const fetchUserRole = async (firebaseUser) => {
-    try {
-      const userDocRef = doc(db, 'users', firebaseUser.uid);
-      const userDoc = await getDoc(userDocRef);
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
 
-      if (userDoc.exists()) {
-        const data = userDoc.data();
-        setRole(data.role || null);
-      } else {
-        // First‑time user — create a placeholder doc with no role
-        await setDoc(userDocRef, {
-          email: firebaseUser.email,
-          displayName: firebaseUser.displayName,
-          photoURL: firebaseUser.photoURL,
-          createdAt: new Date().toISOString(),
-          role: null,
-        });
+  // ── Fetch current user profile from backend ──
+  const fetchCurrentUser = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        setUser(null);
         setRole(null);
+        setLoading(false);
+        return;
       }
+
+      const res = await api.get('/auth/me');
+      const userData = res.data;
+      setUser(userData);
+      setRole(userData.role || null);
     } catch (error) {
-      console.error('Error fetching user role:', error);
+      console.error('Error fetching user profile:', error);
+      // Token is invalid or expired
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('user');
+      setUser(null);
       setRole(null);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // ── On mount: check for OAuth callback token or existing session ──
+  useEffect(() => {
+    // Check if we're returning from OAuth callback with a token in URL
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+
+    if (token) {
+      // Store the token from OAuth callback
+      localStorage.setItem('accessToken', token);
+      // Clean up the URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    // Fetch user profile (either from stored token or newly received OAuth token)
+    fetchCurrentUser();
+  }, [fetchCurrentUser]);
+
+  // ── Google OAuth sign‑in (redirect to Spring Boot) ──
+  const signInWithGoogle = () => {
+    // Redirect to Spring Boot's OAuth2 authorization endpoint
+    // After successful auth, Spring Boot will redirect back to:
+    // FRONTEND_URL/login?token=<jwt_token>
+    window.location.href = `${BACKEND_URL}/oauth2/authorization/google?redirect_uri=${encodeURIComponent(window.location.origin + '/login')}`;
+  };
+
+  // ── Email/Password Login ──
+  const loginWithCredentials = async (email, password) => {
+    try {
+      const res = await api.post('/auth/login', { email, password });
+      const { token, user: userData } = res.data;
+      localStorage.setItem('accessToken', token);
+      setUser(userData);
+      setRole(userData.role || null);
+      return userData;
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
     }
   };
 
-  // ── Listen for auth state changes ──
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        setUser(firebaseUser);
-        await fetchUserRole(firebaseUser);
-      } else {
-        setUser(null);
-        setRole(null);
-      }
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  // ── Google OAuth sign‑in ──
-  const signInWithGoogle = async () => {
+  // ── Email/Password Registration ──
+  const registerWithCredentials = async (name, email, password) => {
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      return result.user;
+      const res = await api.post('/auth/register', { name, email, password });
+      const { token, user: userData } = res.data;
+      localStorage.setItem('accessToken', token);
+      setUser(userData);
+      setRole(userData.role || null);
+      return userData;
     } catch (error) {
-      console.error('Google sign-in error:', error);
+      console.error('Registration error:', error);
       throw error;
     }
   };
@@ -77,25 +115,26 @@ export function AuthProvider({ children }) {
   // ── Sign out ──
   const logout = async () => {
     try {
-      await signOut(auth);
+      // Optionally notify backend
+      await api.post('/auth/logout').catch(() => {});
+    } finally {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('user');
       setUser(null);
       setRole(null);
-    } catch (error) {
-      console.error('Logout error:', error);
-      throw error;
     }
   };
 
-  // ── Update role in Firestore + local state ──
+  // ── Update role via backend API ──
   const updateRole = async (newRole, additionalData = {}) => {
     if (!user) return;
     try {
-      const userDocRef = doc(db, 'users', user.uid);
-      await setDoc(
-        userDocRef,
-        { role: newRole, ...additionalData },
-        { merge: true }
-      );
+      const res = await api.put('/auth/role', {
+        role: newRole,
+        ...additionalData,
+      });
+      const updatedUser = res.data;
+      setUser(updatedUser);
       setRole(newRole);
     } catch (error) {
       console.error('Error updating role:', error);
@@ -108,6 +147,8 @@ export function AuthProvider({ children }) {
     role,
     loading,
     signInWithGoogle,
+    loginWithCredentials,
+    registerWithCredentials,
     logout,
     updateRole,
   };

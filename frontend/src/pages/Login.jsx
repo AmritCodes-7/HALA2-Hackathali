@@ -5,11 +5,22 @@ import { FcGoogle } from 'react-icons/fc';
 import { FiEye, FiEyeOff, FiUser, FiMail, FiLock, FiX } from 'react-icons/fi';
 
 export default function Login() {
-  const { signInWithGoogle, user } = useAuth();
+  const {
+    signInWithGoogle,
+    loginWithCredentials,
+    registerWithCredentials,
+    user,
+  } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('signup');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  // Form fields
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   // If already logged in, redirect
   if (user) {
@@ -17,14 +28,31 @@ export default function Login() {
     return null;
   }
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleLogin = () => {
+    // Redirects to Spring Boot backend OAuth endpoint
+    signInWithGoogle();
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
     setIsLoading(true);
+
     try {
-      await signInWithGoogle();
-      // AuthContext will handle role checking; App.jsx routing will redirect accordingly
+      if (activeTab === 'login') {
+        await loginWithCredentials(email, password);
+      } else {
+        await registerWithCredentials(name, email, password);
+      }
       navigate('/dashboard');
-    } catch (error) {
-      console.error('Login failed:', error);
+    } catch (err) {
+      const message =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        (activeTab === 'login'
+          ? 'Invalid email or password.'
+          : 'Registration failed. Please try again.');
+      setError(message);
     } finally {
       setIsLoading(false);
     }
@@ -61,7 +89,10 @@ export default function Login() {
           {['login', 'signup'].map((tab) => (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab)}
+              onClick={() => {
+                setActiveTab(tab);
+                setError('');
+              }}
               className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all capitalize ${
                 activeTab === tab
                   ? 'bg-white text-gray-900 shadow-sm'
@@ -76,14 +107,9 @@ export default function Login() {
         {/* Google OAuth Button */}
         <button
           onClick={handleGoogleLogin}
-          disabled={isLoading}
-          className="w-full flex items-center justify-center gap-3 px-4 py-3 border-2 border-gray-200 hover:border-gray-300 rounded-xl transition-all hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed group"
+          className="w-full flex items-center justify-center gap-3 px-4 py-3 border-2 border-gray-200 hover:border-gray-300 rounded-xl transition-all hover:bg-gray-50 group"
         >
-          {isLoading ? (
-            <div className="w-5 h-5 border-2 border-gray-300 border-t-orange-500 rounded-full animate-spin" />
-          ) : (
-            <FcGoogle className="w-5 h-5" />
-          )}
+          <FcGoogle className="w-5 h-5" />
           <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
             Continue with Google
           </span>
@@ -96,8 +122,16 @@ export default function Login() {
           <div className="flex-1 h-px bg-gray-200" />
         </div>
 
+        {/* Error Message */}
+        {error && (
+          <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600 flex items-start gap-2">
+            <FiX className="w-4 h-4 shrink-0 mt-0.5" />
+            {error}
+          </div>
+        )}
+
         {/* Form */}
-        <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {activeTab === 'signup' && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Name</label>
@@ -105,7 +139,10 @@ export default function Login() {
                 <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   placeholder="Jane Smith"
+                  required
                   className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-gray-400"
                 />
               </div>
@@ -118,7 +155,10 @@ export default function Login() {
               <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
+                required
                 className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-gray-400"
               />
             </div>
@@ -130,7 +170,10 @@ export default function Login() {
               <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
+                required
                 className="w-full pl-11 pr-11 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-gray-400"
               />
               <button
@@ -145,9 +188,16 @@ export default function Login() {
 
           <button
             type="submit"
-            className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5"
+            disabled={isLoading}
+            className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {activeTab === 'login' ? 'Sign In' : 'Create Account'}
+            {isLoading ? (
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto" />
+            ) : activeTab === 'login' ? (
+              'Sign In'
+            ) : (
+              'Create Account'
+            )}
           </button>
         </form>
 
@@ -155,7 +205,10 @@ export default function Login() {
         <p className="mt-6 text-center text-sm text-gray-500">
           {activeTab === 'login' ? "Don't have an account? " : 'Already have an account? '}
           <button
-            onClick={() => setActiveTab(activeTab === 'login' ? 'signup' : 'login')}
+            onClick={() => {
+              setActiveTab(activeTab === 'login' ? 'signup' : 'login');
+              setError('');
+            }}
             className="font-semibold text-blue-600 hover:text-blue-800 transition-colors"
           >
             {activeTab === 'login' ? 'Sign Up' : 'Log In'}

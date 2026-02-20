@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
-import { FiUser, FiTool, FiArrowRight, FiShield, FiStar, FiCheckCircle } from 'react-icons/fi';
+import { FiUser, FiTool, FiArrowRight, FiShield, FiCheckCircle } from 'react-icons/fi';
 
 export default function RoleSelection() {
   const { user, updateRole } = useAuth();
@@ -76,7 +76,7 @@ export default function RoleSelection() {
         <div className="max-w-3xl mx-auto text-center mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 text-orange-600 rounded-full text-sm font-medium mb-6">
             <FiShield className="w-4 h-4" />
-            Welcome{user?.displayName ? `, ${user.displayName.split(' ')[0]}` : ''}! One more step.
+            Welcome{user?.displayName ? `, ${user.displayName.split(' ')[0]}` : user?.name ? `, ${user.name.split(' ')[0]}` : ''}! One more step.
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             How will you use Fix<span className="text-orange-500">It</span>?
