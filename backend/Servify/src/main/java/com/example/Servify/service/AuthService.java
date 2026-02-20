@@ -1,11 +1,17 @@
 package com.example.Servify.service;
 
+import java.io.IOException;
+
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.Servify.dto.LoginDto;
 import com.example.Servify.jwt.JwtUtils;
@@ -16,6 +22,9 @@ import com.example.Servify.repository.UserRepo;
 
 @Service
 public class AuthService {
+
+    @Autowired
+    private GridFsTemplate gridfs;
     
     UserRepo userRepo;
     BCryptPasswordEncoder encoder;
@@ -57,17 +66,24 @@ public class AuthService {
         return "user registered";
     }
 
-    public String registerStaff(Users user){
+    public String registerStaff(Users user,MultipartFile file) throws IOException{
         if (user.getUsername().isBlank() || user.getPassword().isBlank()){
             throw new RuntimeException("please enter username and password");
         }
         if (userRepo.existsByUsername(user.getUsername())){
             throw new RuntimeException("user already exists with that name");
-        }
+        } 
+
+        ObjectId id = storeTheImage(file);
         user.setPassword(encoder.encode(user.getPassword()));
         user.setRole("ROLE_STAFF");
+        user.setCertificateUrl("http://localhost:8080/image/" + id);
         userRepo.save(user);
         return "user registered";
+    }
+
+    public ObjectId storeTheImage(MultipartFile file) throws IOException{
+        return gridfs.store(file.getInputStream(),file.getOriginalFilename(),file.getContentType());
     }
 
     public String loginUser(LoginDto user){
