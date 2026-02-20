@@ -1,15 +1,14 @@
 package com.example.Servify.controller;
 
-import com.example.Servify.dto.BackendResponse;
-import com.example.Servify.dto.SkillDto;
-import com.example.Servify.model.Skill;
-import com.example.Servify.service.SkillServices;
-import org.springframework.http.HttpStatus;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.example.Servify.dto.BackendResponse;
+import com.example.Servify.dto.SkillDto;
+import com.example.Servify.service.SkillServices;
 
 @RestController
 public class SkillController {
@@ -26,7 +25,7 @@ public class SkillController {
         List<SkillDto> skills = skillServices.findAllSkills();
 
         return ResponseEntity
-                .status(HttpStatus.FOUND)
+                .ok()
                 .body(new BackendResponse(true, skills));
     }
 
