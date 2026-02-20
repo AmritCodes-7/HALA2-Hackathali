@@ -1,0 +1,29 @@
+Company Name: Servify
+
+About Servify:
+Servify is a SaaS (Software as a Service) company that provides instant home services to users. The platform connects users with nearby professional service providers quickly and efficiently.
+
+Services Offered:
+- Electrician services
+- Plumber services
+- Professional consultation services
+
+How It Works:
+- Users can search for the service they need
+- Servify displays the nearest available service providers based on the user's location
+- Users can get fast support and instant assistance
+
+Key Features:
+- Location-based service discovery (shows nearest professionals)
+- Instant home service booking
+- Professional consultation available
+- Fast support for users in need of home services
+
+Target Users:
+- Homeowners and residents who need quick home repair or maintenance services
+- People looking to consult with professionals for home-related issues
+
+Founding Date: February 21, 2026
+
+Business Model:
+Servify operates as a SaaS platform, connecting service seekers with skilled professionals like electricians and plumbers in their vicinity.

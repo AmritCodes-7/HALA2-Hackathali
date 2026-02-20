@@ -8,16 +8,13 @@ from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from src.prompt import generate_certificate_prompt, parser, CertificateValidationOutput
 from src.helper import TextExtractorModel, chat_with_user, FakeDetector
+from src.rag import create_index
+from src.rag import ingest_documents
 
 load_dotenv()
 USER_INFO_API = "http://localhost:8081/api/py/{username}"  # "http://localhost:8081/api/py/{username}"
 
 app = FastAPI()
-
-llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash",
-    temperature=0.3,
-)
 
 
 # Pydantic models matching Spring Boot response
@@ -40,6 +37,15 @@ class SpringBootResponse(BaseModel):
 class ChatRequest(BaseModel):
     username: str
     message: str
+
+
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",
+    temperature=0.3,
+)
+
+create_index()
+ingest_documents("../ai/data/servify_rag.txt")
 
 
 # Certificate Validation Endpoint

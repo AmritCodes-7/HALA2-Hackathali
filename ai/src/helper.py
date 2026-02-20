@@ -9,6 +9,7 @@ from google.genai import types
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
 from src.prompt import fake_detection_prompt, fake_parser, FakeDetectionOutput
+from src.rag import query_rag
 
 load_dotenv()
 
@@ -97,13 +98,17 @@ def get_user_history(username: str) -> list:
 def chat_with_user(username: str, message: str) -> str:
     history = get_user_history(username)
 
-    history.append(HumanMessage(content=message))
+    # query RAG for relevant company context
+    rag_context = query_rag(message)
+    enriched_message = f"{message}\n\n[Company Context]: {rag_context}"
+
+    history.append(HumanMessage(content=enriched_message))
 
     if len(history) > MAX_MESSAGES:
         history_text = "\n".join(
             [
                 f"{'User' if isinstance(m, HumanMessage) else 'AI'}: {m.content}"
-                for m in history[1:]  # skip system message
+                for m in history[1:]
             ]
         )
         summary = llm.invoke(
@@ -120,7 +125,7 @@ def chat_with_user(username: str, message: str) -> str:
             )
         ]
         history = user_sessions[username]
-        history.append(HumanMessage(content=message))
+        history.append(HumanMessage(content=enriched_message))
 
     response = llm.invoke(history)
     history.append(AIMessage(content=response.content))
