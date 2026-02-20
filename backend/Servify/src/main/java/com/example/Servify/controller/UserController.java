@@ -3,6 +3,7 @@ package com.example.Servify.controller;
 import com.example.Servify.dto.BackendResponse;
 import com.example.Servify.model.Users;
 import com.example.Servify.service.UserService;
+import org.springframework.http.HttpRange;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +37,16 @@ public class UserController {
         return ResponseEntity
                 .status(HttpStatus.FOUND)
                 .body(new BackendResponse(true, user));
+    }
+
+    @GetMapping("skills/{skillname}")
+    public ResponseEntity<BackendResponse> findBySkillName(@PathVariable String skillname) {
+
+        List<Users> users = userService.findUserWithSkill(skillname);
+
+        return ResponseEntity
+                .status(HttpStatus.FOUND)
+                .body(new BackendResponse(true, users));
     }
 
 }
