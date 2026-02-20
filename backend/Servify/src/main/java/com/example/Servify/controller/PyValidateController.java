@@ -11,7 +11,7 @@ import com.example.Servify.service.PyValidateService;
 
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class PyValidateController {
 
     

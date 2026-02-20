@@ -24,7 +24,7 @@ import com.mongodb.client.gridfs.model.GridFSFile;
 import io.jsonwebtoken.io.IOException;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class ImageController {
 
     @Autowired

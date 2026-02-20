@@ -61,5 +61,12 @@ public class UserService {
         userRepo.deleteByUsername(username);
     }
 
+    public UsersDto getSelfUser(){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+       Users user = userRepo.findByUsername(username);
+       UsersDto userToDto = dtoMapper.UserToDto(user);
+       return userToDto;
+    }
+
 
 }

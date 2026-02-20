@@ -17,7 +17,7 @@ import com.example.Servify.model.SkillLevel;
 import com.example.Servify.service.UserService;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class UserController {
 
     private final UserService userService;
@@ -72,5 +72,13 @@ public class UserController {
                 .body(new BackendResponse(true, "Deleted Successfully"));
     }
 
+    @GetMapping("/get-self")
+    public ResponseEntity<BackendResponse> getSelfUser() {
+        UsersDto selfUser = userService.getSelfUser();
+
+        return ResponseEntity
+                .ok()
+                .body(new BackendResponse(true, selfUser));
+    }
 
 }

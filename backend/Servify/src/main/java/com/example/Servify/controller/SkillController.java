@@ -12,7 +12,7 @@ import com.example.Servify.dto.SkillDto;
 import com.example.Servify.service.SkillServices;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class SkillController {
 
     private final SkillServices skillServices;

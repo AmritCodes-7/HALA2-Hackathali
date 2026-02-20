@@ -14,7 +14,7 @@ import com.example.Servify.dto.PyResponse;
 
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class ChatBotController {
 
     @Autowired RestTemplate restTemplate;
