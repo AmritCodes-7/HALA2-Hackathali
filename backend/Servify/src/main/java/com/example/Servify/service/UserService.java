@@ -2,7 +2,9 @@ package com.example.Servify.service;
 
 import java.util.List;
 
+import com.example.Servify.dto.SkillDto;
 import com.example.Servify.exceptions.SkillDoesntExist;
+import com.example.Servify.model.Skill;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -81,6 +83,13 @@ public class UserService {
 
         return usersWithSkills.stream().map(user -> dtoMapper.UserToDto(user)).toList();
     }
+
+    public List<SkillLevel> getUsersSkills(String username){
+        List<SkillLevel> skills = userRepo.findByUsername(username).getSkills();
+
+        return skills;
+    }
+
 
 
 }

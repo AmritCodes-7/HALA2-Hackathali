@@ -45,6 +45,16 @@ public class UserController {
                 .body(new BackendResponse(true, user));
     }
 
+        @GetMapping("/skills/{username}")
+    public ResponseEntity<BackendResponse> findSkills(@PathVariable String username) {
+            List<SkillLevel> usersSkills = userService.getUsersSkills(username);
+
+            return  ResponseEntity
+                    .ok()
+                    .body(new BackendResponse(true,usersSkills));
+
+        }
+
     @GetMapping("/{skillname}")
     public ResponseEntity<BackendResponse> findBySkillName(@PathVariable String skillname) {
 
@@ -84,9 +94,9 @@ public class UserController {
 
     @GetMapping("/find/staff/{skillId}")
     public ResponseEntity<BackendResponse> findStaffBySkill(@PathVariable String skillId) {
-        List<UsersDto> userWithSkill = userService.findUserWithSkill(skillId);
-        return ResponseEntity.ok().body(new BackendResponse(true,userWithSkill));
+        List<UsersDto> userWithSkill = userService.getStaffBySkill(skillId);
+        return ResponseEntity.ok().body(new BackendResponse(true, userWithSkill));
     }
-    
+
 
 }

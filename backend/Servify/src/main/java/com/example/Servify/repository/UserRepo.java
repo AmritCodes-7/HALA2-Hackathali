@@ -2,6 +2,7 @@ package com.example.Servify.repository;
 
 import java.util.List;
 
+import com.example.Servify.model.SkillLevel;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
