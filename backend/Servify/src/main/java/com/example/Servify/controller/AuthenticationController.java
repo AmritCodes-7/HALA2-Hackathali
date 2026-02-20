@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Servify.dto.BackendResponse;
 import com.example.Servify.dto.LoginDto;
+import com.example.Servify.dto.LoginResponse;
 import com.example.Servify.model.Users;
 import com.example.Servify.service.AuthService;
 
@@ -42,9 +43,9 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<BackendResponse> loginUser(@RequestBody LoginDto user) {
-        String message = authService.loginUser(user);
-        return ResponseEntity.ok().body(new BackendResponse(true,message));
+    public ResponseEntity<LoginResponse> loginUser(@RequestBody LoginDto user) {
+        String token = authService.loginUser(user);
+        return ResponseEntity.ok(new LoginResponse(true, token));
     }
     
 }
