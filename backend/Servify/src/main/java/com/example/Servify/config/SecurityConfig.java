@@ -1,5 +1,6 @@
 package com.example.Servify.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,12 +15,15 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.example.Servify.jwt.JwtAuthFilter;
+import com.example.Servify.oauth.OAuthSuccessHandler;
 import com.example.Servify.service.MyUserDetailsService;
 
 
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
+
+    @Autowired OAuthSuccessHandler oAuthSuccessHandler;
 
     private final MyUserDetailsService myUserDetaisService;
     private final JwtAuthFilter jwtAuthFilter;
@@ -29,20 +33,27 @@ public class SecurityConfig {
     }
     
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-        return http
-                .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/api/v1/auth/login/**",
-                                    "/api/v1/auth/register/**").permitAll()
-                    .requestMatchers("/ws/**").permitAll()        // allow websocket endpoint
-                .requestMatchers("/**/*.html").permitAll()    // allow HTML frontend
-                .anyRequest().authenticated())
-                .csrf(c -> c.disable())
-                .cors(Customizer.withDefaults())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
-                
-    }
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    return http
+            .csrf(csrf -> csrf.disable())
+            .cors(Customizer.withDefaults())
+            .authorizeHttpRequests(auth -> auth
+                    .requestMatchers(
+                            "/api/v1/auth/login/**",
+                            "/api/v1/auth/register/**",
+                            "/oauth2/**",
+                            "/login/**",
+                            "/ws/**",
+                            "/**/*.html"
+                    ).permitAll()
+                    .anyRequest().authenticated()
+            )
+            .oauth2Login(oauth -> oauth
+                    .successHandler(oAuthSuccessHandler)
+            )
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+            .build();
+}
 
     @Bean
     BCryptPasswordEncoder encoder(){
