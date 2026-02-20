@@ -1,2 +1,7 @@
 .env
 research
+*/__pycache__
+*/*.ipynb
+
+.venv
+__pycache__
