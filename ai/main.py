@@ -10,8 +10,7 @@ from src.prompt import generate_certificate_prompt, parser, CertificateValidatio
 from src.helper import TextExtractorModel, chat_with_user, FakeDetector
 
 load_dotenv()
-
-USER_INFO_API = os.getenv("USER_INFO_API")  # "http://localhost:8081/api/py/{username}"
+USER_INFO_API = "http://localhost:8081/api/py/{username}"  # "http://localhost:8081/api/py/{username}"
 
 app = FastAPI()
 
