@@ -1,8 +1,7 @@
 import os
-import httpx
 from fastapi import FastAPI
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from src.prompt import generate_certificate_prompt, parser, CertificateValidationOutput
@@ -26,9 +25,9 @@ class UserMessage(BaseModel):
     certificateUrl: str
 
 
-class SpringBootResponse(BaseModel):
-    success: bool
-    message: UserMessage
+# class SpringBootResponse(BaseModel):
+#     success: bool
+#     message: UserMessage
 
 
 class ChatRequest(BaseModel):
@@ -46,33 +45,26 @@ create_index()
 ingest_documents("src/data/servify_rag.txt")
 
 
-@app.get("/validate-user/{username}")
-async def validate_user(username: str):
-    USER_INFO_API = os.getenv("USER_INFO_USER") + "/{username}"
-    url = USER_INFO_API.format(username=username)
-
-    async with httpx.AsyncClient() as client:
-        response = await client.get(url)
-        response.raise_for_status()
-        data = SpringBootResponse(**response.json())
+@app.post("/validate-user")
+async def validate_user(data: UserMessage):
 
     fake_detector = FakeDetector()
-    authenticity = fake_detector.detect(data.message.certificateUrl)
+    authenticity = fake_detector.detect(data.certificateUrl)
 
     if not authenticity.authentic:
         return {
-            "username": username,
-            "summary": "Not Verified",
+            "username": data.username,
+            "result": False,
             "reason": f"Certificate appears fake: {authenticity.reason}",
         }
 
-    user_skills = list(data.message.skills)
+    user_skills = list(data.skills)
 
     textExtractor = TextExtractorModel()
-    certificate_text = textExtractor.extract_text_from_url(data.message.certificateUrl)
+    certificate_text = textExtractor.extract_text_from_url(data.certificateUrl)
 
     prompt = generate_certificate_prompt(
-        username=data.message.username,
+        username=data.username,
         user_skills=user_skills,
         certificate_text=certificate_text,
     )
