@@ -19,10 +19,13 @@ public class PyTransferController {
         this.pyTransferService = pyTransferService;
     }
 
-    @GetMapping
+    // FIX: was @GetMapping with NO path — mapped to GET /api/v1 (the root!)
+    // This intercepted ALL unmatched GET requests to /api/v1, including things
+    // like /api/v1/skills which would fall through and hit this instead of SkillController.
+    // Added explicit path /py-transfer so it only handles its own endpoint.
+    @GetMapping("/py-transfer")
     public ResponseEntity<BackendResponse> validateCertificate(UsersPyDto dto){
         PyValidateResponse pyValidateResponse = pyTransferService.pyValidateResponse(dto);
         return ResponseEntity.ok().body(new BackendResponse(true,pyValidateResponse));
     }
-
 }

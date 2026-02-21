@@ -1,8 +1,8 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { useAuth } from './context/AuthContext'
-import { useHeartbeat } from './hooks/useHeartbeat'
-import { logoutSession } from './api/users'
+// FIX: removed useHeartbeat from here — it's already called in AppLayout
+// Calling it here AND in AppLayout caused every heartbeat to fire TWICE
 import AppLayout from './components/layout/AppLayout'
 
 import LoginPage    from './pages/LoginPage'
@@ -15,13 +15,7 @@ import SkillsPage   from './pages/SkillsPage'
 import ProfilePage  from './pages/ProfilePage'
 import ValidatePage from './pages/ValidatePage'
 
-// Inner component so it can access AuthContext
 function AppRoutes() {
-  const { isAuthenticated } = useAuth()
-
-  // Send heartbeat every 60s while logged in
-  useHeartbeat(isAuthenticated)
-
   return (
     <Routes>
       <Route path="/login"    element={<LoginPage />} />
@@ -46,7 +40,7 @@ function AppRoutes() {
 function ProtectedLayout() {
   const { isAuthenticated } = useAuth()
   if (!isAuthenticated) return <Navigate to="/login" replace />
-  return <AppLayout />
+  return <AppLayout /> // AppLayout already calls useHeartbeat internally
 }
 
 export default function App() {

@@ -4,14 +4,18 @@ export const getSelfUser     = ()           => api.get('/get-self')
 export const getAllUsers      = ()           => api.get('/users')
 export const getUserByName   = (username)   => api.get(`/users/${username}`)
 export const getUsersBySkill = (skill)      => api.get(`/${skill}`)
+
+// FIX BUG 2: backend is GET /skills/{username} — we had renamed to /user-skills/{username}
+// but the backend UserController still uses /skills/{username}, so match it
 export const getUserSkills   = (username)   => api.get(`/skills/${username}`)
 
-// FIX: addSkill now posts a SkillLevel object with a real skillId (mongo id) and level
 export const addSkillToProfile = (skillId, level) => api.post('/addskills', { skillId, level })
 
 export const deleteUser      = ()           => api.delete('/delete')
 
-export const getAllSkills     = ()           => api.get('/skills')
+// FIX BUG 1: backend SkillController is GET /get/skills, NOT /skills
+// /skills would hit UserController's /skills/{username} with an empty username param
+export const getAllSkills     = ()           => api.get('/get/skills')
 export const addNewSkill     = (skill)      => api.post('/add-skill', skill)
 
 export const sendChatPrompt  = (data)       => api.post('/chatbot', data)

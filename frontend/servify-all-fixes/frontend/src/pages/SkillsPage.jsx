@@ -5,15 +5,18 @@ import styles from './SkillsPage.module.css'
 
 export default function SkillsPage() {
   const { user } = useAuth()
-  const [skills, setSkills]     = useState([])
-  const [loading, setLoading]   = useState(true)
-  const [search, setSearch]     = useState('')
-  // FIX: store the full skill object so we can use skill.skillId (the real mongo id)
-  const [addForm, setAddForm]   = useState({ skill: null, level: 1 })
-  const [adding, setAdding]     = useState(false)
-  const [msg, setMsg]           = useState('')
+  const [skills, setSkills]         = useState([])
+  const [loading, setLoading]       = useState(true)
+  const [search, setSearch]         = useState('')
+  // FIX: simplified state — just store selectedSkillId directly instead of full skill object
+  // The old pattern (storing full skill object via skills.find()) broke because
+  // SkillDto was missing skillId, so skills.find() always returned undefined
+  const [selectedSkillId, setSelectedSkillId] = useState('')
+  const [level, setLevel]           = useState(1)
+  const [adding, setAdding]         = useState(false)
+  const [msg, setMsg]               = useState('')
 
-  const role = user?.role || ''
+  const role    = user?.role || ''
   const isStaff = role.includes('STAFF') || role.includes('ADMIN')
 
   useEffect(() => {
@@ -30,12 +33,14 @@ export default function SkillsPage() {
 
   const handleAddSkill = async (e) => {
     e.preventDefault()
-    if (!addForm.skill) return
+    if (!selectedSkillId) return
     setAdding(true)
     try {
-      // FIX: use addForm.skill.skillId (the real MongoDB ObjectId), not the name
-      await addSkillToProfile(addForm.skill.skillId, Number(addForm.level))
+      // FIX: selectedSkillId is the real MongoDB skillId from the option value
+      await addSkillToProfile(selectedSkillId, Number(level))
       setMsg('Skill added to your profile!')
+      setSelectedSkillId('')
+      setLevel(1)
       setTimeout(() => setMsg(''), 3000)
     } catch (err) {
       setMsg(err.response?.data?.message || 'Failed to add skill')
@@ -65,28 +70,33 @@ export default function SkillsPage() {
           <form onSubmit={handleAddSkill} className={styles.addForm}>
             <select
               className={styles.select}
-              value={addForm.skill?.skillId || ''}
-              onChange={e => {
-                // FIX: store the full skill object by finding it from the list
-                const selected = skills.find(s => s.skillId === e.target.value)
-                setAddForm(p => ({ ...p, skill: selected || null }))
-              }}
+              value={selectedSkillId}
+              // FIX: directly set the skillId string — no more skills.find() needed
+              onChange={e => setSelectedSkillId(e.target.value)}
               required
             >
               <option value="">— Select a skill —</option>
-              {/* FIX: use s.skillId as value so we send the real id to backend */}
-              {skills.map(s => <option key={s.skillId} value={s.skillId}>{s.name}</option>)}
+              {/* FIX: option value is s.skillId (real mongo id) — requires backend SkillDto to include skillId */}
+              {skills.map(s => (
+                <option key={s.skillId} value={s.skillId}>
+                  {s.name}
+                </option>
+              ))}
             </select>
             <div className={styles.levelRow}>
-              <label>Proficiency Level: <strong>{addForm.level}</strong></label>
+              <label>Proficiency Level: <strong>{level}</strong></label>
               <input
                 type="range"
                 min={1} max={10}
-                value={addForm.level}
-                onChange={e => setAddForm(p => ({ ...p, level: e.target.value }))}
+                value={level}
+                onChange={e => setLevel(Number(e.target.value))}
               />
             </div>
-            <button type="submit" className={styles.addBtn} disabled={adding}>
+            <button
+              type="submit"
+              className={styles.addBtn}
+              disabled={adding || !selectedSkillId}
+            >
               {adding ? 'Adding…' : '+ Add to Profile'}
             </button>
           </form>
@@ -99,7 +109,7 @@ export default function SkillsPage() {
       ) : (
         <div className={styles.grid}>
           {filtered.map((s, i) => (
-            <div key={i} className={styles.skillCard} style={{ animationDelay: `${i * 0.04}s` }}>
+            <div key={s.skillId || i} className={styles.skillCard} style={{ animationDelay: `${i * 0.04}s` }}>
               <div className={styles.skillIcon}>{getIcon(s.name)}</div>
               <div className={styles.skillInfo}>
                 <p className={styles.skillName}>{s.name}</p>
