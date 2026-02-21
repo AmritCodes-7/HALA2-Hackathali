@@ -5,15 +5,9 @@ from langchain_core.output_parsers import PydanticOutputParser
 
 
 # Certificate Validation
-class SkillVerification(BaseModel):
-    skill: str
-    status: str
-    reason: str | None = None
-
-
 class CertificateValidationOutput(BaseModel):
     username: str
-    result: str  # true or false
+    result: bool
 
 
 certificate_prompt_template = """
@@ -48,32 +42,17 @@ Instructions:
   * "Plumbing works" implies Plumber
   * "Stitching & Tailoring" implies Tailor
   * "Electrical wiring" implies Electrician
-- If a skill is partially mentioned, implied, or strongly related → mark "Verified"
-- Only mark "Not Verified" if there is absolutely no evidence or relation
+- If a skill is partially mentioned, implied, or strongly related → mark as verified
+- Only mark as not verified if there is absolutely no evidence or relation
 - Ignore filler text like "Lorem ipsum", "Signature", "Name Surname"
-- Summary must be "Verified" if ALL skills are verified, otherwise "Not Verified"
-- result must be true if verified or false if not verified
+- result must be true if ALL skills are verified, otherwise false
 
 Username: {username}
 Claimed Skills: {user_skills}
 Certificate Text: {certificate_text}
 
-# "skills_verification": [
-#     {{"skill": "Barber", "status": "Verified", "reason": "Certificate mentions hair cutting and styling training"}},
-#     {{"skill": "Plumber", "status": "Not Verified", "reason": "No mention of plumbing or related work found"}}
-#   ],
-Return your output as JSON:
-{{
-  "username": "{username}",
-  "result": true or false 
-}}
-
-Important:
-- Think like a human recruiter, not a keyword matcher
-- Understand the context and intent of the certificate
-- A barber certificate may say 'Beauty and Hair Care' — that still counts
-- Be generous with related and implied skills
-- summary = "Verified" only if ALL skills are verified, otherwise "Not Verified"
+Return ONLY a raw JSON object with no markdown, no code blocks, no explanation:
+{{"username": "{username}", "result": true}}
 """
 
 prompt_template = PromptTemplate(
@@ -107,11 +86,11 @@ Analyze this certificate image and answer the following:
 2. Are there signs of tampering, editing, or forgery?
 3. Is the text consistent and professionally formatted?
 
-Return your output as JSON:
-{{
-  "authentic": true or false,
-  "reason": "explanation here"
-}}
+Be generous — if it looks like a genuine certificate from a vocational or training institute, mark it as authentic.
+Only mark as not authentic if there are clear and obvious signs of forgery.
+
+Return ONLY a raw JSON object with no markdown, no code blocks, no explanation:
+{{"authentic": true, "reason": "explanation here"}}
 """
 
 fake_detection_prompt = PromptTemplate(

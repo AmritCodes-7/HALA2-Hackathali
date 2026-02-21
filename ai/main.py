@@ -10,24 +10,13 @@ from src.rag import create_index, ingest_documents
 
 load_dotenv()
 
-
 app = FastAPI()
-
-
-# class Skill(BaseModel):
-#     skill: str | None = None
-#     level: int | None = None
 
 
 class UserMessage(BaseModel):
     username: str
     skills: List[str]
     certificateUrl: str
-
-
-# class SpringBootResponse(BaseModel):
-#     success: bool
-#     message: UserMessage
 
 
 class ChatRequest(BaseModel):
@@ -45,9 +34,18 @@ create_index()
 ingest_documents("src/data/servify_rag.txt")
 
 
+def _clean_json(raw: str) -> str:
+    raw = raw.strip()
+    if raw.startswith("```"):
+        parts = raw.split("```")
+        raw = parts[1] if len(parts) > 1 else raw
+        if raw.startswith("json"):
+            raw = raw[4:]
+    return raw.strip()
+
+
 @app.post("/validate-user")
 async def validate_user(data: UserMessage):
-
     fake_detector = FakeDetector()
     authenticity = fake_detector.detect(data.certificateUrl)
 
@@ -70,7 +68,9 @@ async def validate_user(data: UserMessage):
     )
 
     raw_output = llm.invoke(prompt)
-    validation_result: CertificateValidationOutput = parser.parse(raw_output.content)
+    validation_result: CertificateValidationOutput = parser.parse(
+        _clean_json(raw_output.content)
+    )
 
     return validation_result.model_dump()
 
