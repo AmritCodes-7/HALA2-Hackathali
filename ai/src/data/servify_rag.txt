@@ -1,32 +1,95 @@
 Company Name: Servify
 
 About Servify:
-Servify is a SaaS (Software as a Service) company that provides instant home services to users. The platform connects users with nearby professional service providers quickly and efficiently.
+Servify is a SaaS (Software as a Service) company founded on February 21, 2026, that provides instant home services to users in Nepal. The platform connects users with nearby verified professional service providers quickly and efficiently. Servify is built to solve the problem of finding trusted, skilled professionals for home repair and maintenance tasks.
 
 Services Offered:
-- Electrician services
-- Plumber services
-- Professional consultation services
+- Electrician services (wiring, short circuit repair, appliance installation, meter issues)
+- Plumber services (pipe repair, leakage fix, tap installation, drainage issues)
+- Carpenter services (furniture repair, door/window fixing, custom woodwork)
+- Professional consultation services (get advice before booking a full service)
 
 How It Works:
-- Users can search for the service they need
-- Servify displays the nearest available service providers based on the user's location
-- Users can get fast support and instant assistance
+1. User opens the Servify app or website
+2. User searches for the service they need (e.g. "plumber" or "electrician")
+3. Servify detects the user's location automatically
+4. The platform displays the nearest available and verified professionals
+5. User selects a professional and books instantly
+6. The professional arrives at the user's location and completes the job
+7. User rates the professional after the service
 
 Key Features:
-- Location-based service discovery (shows nearest professionals)
-- Instant home service booking
-- Professional consultation available
+- Location-based service discovery (shows nearest professionals in real time)
+- Instant home service booking (no waiting, no phone calls)
+- Certificate verification system (all professionals are verified by AI)
+- Professional consultation available before booking
 - Fast support for users in need of home services
+- Real-time availability (see who is online and ready)
+- Rating and review system for professionals
+
+Pricing:
+- Consultation: Free for the first 15 minutes
+- Electrician visit: Starting from NPR 500
+- Plumber visit: Starting from NPR 400
+- Carpenter visit: Starting from NPR 600
+- Final pricing depends on the complexity of the job
+- No hidden charges — professionals provide a quote before starting work
+
+Booking Policy:
+- Users can book a service anytime during support hours
+- Bookings can be cancelled up to 30 minutes before the scheduled visit
+- Cancellations after 30 minutes may incur a small fee of NPR 100
+- Rescheduling is free if done 1 hour in advance
+
+Refund Policy:
+- Full refund if no professional is found within 30 minutes
+- Partial refund if service is cancelled mid-way due to professional's fault
+- No refund for completed services unless there is a verified complaint
+
+Service Areas:
+- Currently serving Kathmandu Valley (Kathmandu, Lalitpur, Bhaktapur)
+- Expanding to Pokhara and Chitwan by mid-2026
 
 Target Users:
 - Homeowners and residents who need quick home repair or maintenance services
+- Renters who need minor fixes without involving landlords
 - People looking to consult with professionals for home-related issues
-
-Founding Date: February 21, 2026
+- Offices and small businesses needing maintenance support
 
 Business Model:
-Servify operates as a SaaS platform, connecting service seekers with skilled professionals like electricians and plumbers in their vicinity.
+Servify operates as a SaaS platform, connecting service seekers with skilled professionals. Servify earns a small commission per completed booking. Professionals pay a monthly subscription to be listed on the platform.
+
+Professional Verification:
+- All professionals must submit their skill certificates
+- Certificates are verified using Servify's AI-powered certificate validation system
+- Professionals are rated by users after each job
+- Professionals with ratings below 3.0 are suspended pending review
+- Background checks are conducted for all new professionals
+
+FAQ:
+Q: How do I book a service?
+A: Open the app, search for the service you need, select a nearby professional, and confirm the booking. It takes less than 2 minutes.
+
+Q: Are the professionals trustworthy?
+A: Yes. All professionals on Servify are verified through our AI certificate validation system and background checks.
+
+Q: What if the professional doesn't show up?
+A: You will receive a full refund and we will assign a new professional immediately.
+
+Q: Can I talk to a professional before booking?
+A: Yes. Use the free consultation feature to chat or call a professional before committing to a booking.
+
+Q: What payment methods are accepted?
+A: Cash on delivery, eSewa, Khalti, and bank transfer.
+
+Q: How do I cancel a booking?
+A: Go to "My Bookings" in the app, select the booking, and tap "Cancel". Cancellations are free if done 30 minutes before the visit.
+
+Q: What areas does Servify serve?
+A: Currently Kathmandu Valley. Expanding to Pokhara and Chitwan by mid-2026.
+
+Q: How long does it take for a professional to arrive?
+A: Usually within 30-60 minutes depending on your location and availability.
 
 Support:
 - For any issues or queries, users can contact Servify support through the app or website
@@ -37,3 +100,118 @@ Contact & Support:
 - Phone: +977-01-5555678
 - Email: support@servify.com.np
 - Support Hours: Sunday to Friday, 9:00 AM to 6:00 PM (NPT)
+- Emergency support available 24/7 via the app
+
+---
+
+DUMMY STAFF PROFILES (Verified Professionals on Servify):
+
+Staff 1:
+- Username: ram_electrician
+- Full Name: Ram Bahadur Shrestha
+- Role: Electrician
+- Skills: Electrical wiring (Level 3), Appliance installation (Level 2)
+- Location: Baneshwor, Kathmandu
+- Rating: 4.8 / 5.0
+- Completed Jobs: 134
+- Status: Online
+- Verified: Yes
+- About: 5 years of experience in residential and commercial electrical work. Specializes in short circuit repairs and new wiring installations.
+
+Staff 2:
+- Username: sita_plumber
+- Full Name: Sita Kumari Tamang
+- Role: Plumber
+- Skills: Pipe repair (Level 4), Drainage cleaning (Level 3), Tap installation (Level 2)
+- Location: Lalitpur, Patan
+- Rating: 4.6 / 5.0
+- Completed Jobs: 89
+- Status: Online
+- Verified: Yes
+- About: Expert in residential plumbing with 4 years of experience. Known for fast response and clean work.
+
+Staff 3:
+- Username: bikash_carpenter
+- Full Name: Bikash Rai
+- Role: Carpenter
+- Skills: Furniture repair (Level 3), Door/window fixing (Level 4), Custom woodwork (Level 2)
+- Location: Bhaktapur
+- Rating: 4.5 / 5.0
+- Completed Jobs: 62
+- Status: Offline
+- Verified: Yes
+- About: Skilled carpenter with expertise in traditional Nepali woodwork as well as modern furniture repair.
+
+Staff 4:
+- Username: anita_electrician
+- Full Name: Anita Gurung
+- Role: Electrician
+- Skills: Electrical wiring (Level 2), MCB/fuse repair (Level 3), CCTV installation (Level 2)
+- Location: Koteshwor, Kathmandu
+- Rating: 4.3 / 5.0
+- Completed Jobs: 47
+- Status: Online
+- Verified: Yes
+- About: Certified electrician from CTEVT with 3 years of field experience. Available for both emergency and scheduled visits.
+
+Staff 5:
+- Username: suresh_plumber
+- Full Name: Suresh Magar
+- Role: Plumber
+- Skills: Water tank installation (Level 3), Pipe leakage repair (Level 4)
+- Location: Chabahil, Kathmandu
+- Rating: 4.7 / 5.0
+- Completed Jobs: 110
+- Status: Online
+- Verified: Yes
+- About: Highly rated plumber with expertise in water tank systems and emergency leakage repair.
+
+---
+
+DUMMY USER PROFILES (Servify Customers):
+
+User 1:
+- Username: amrit_user
+- Full Name: Amrit Sharma
+- Location: Baneshwor, Kathmandu
+- Member Since: February 2026
+- Bookings Made: 3
+- Preferred Services: Electrician, Plumber
+- About: Regular Servify user who has booked electrician and plumber services multiple times.
+
+User 2:
+- Username: priya_home
+- Full Name: Priya Maharjan
+- Location: Patan, Lalitpur
+- Member Since: February 2026
+- Bookings Made: 1
+- Preferred Services: Consultation, Carpenter
+- About: New user looking for home renovation consultation and carpenter services.
+
+User 3:
+- Username: deepak_ktm
+- Full Name: Deepak Adhikari
+- Location: Thamel, Kathmandu
+- Member Since: February 2026
+- Bookings Made: 5
+- Preferred Services: Plumber
+- About: Frequent user with 5 completed bookings, primarily for plumbing issues in his apartment.
+
+---
+
+IMPORTANT CHATBOT BEHAVIOR NOTES:
+
+Data Limitations:
+- The Servify Assistant does not have access to the live database or real user data
+- It cannot look up real bookings, real users, or real professionals in the system
+- It cannot check real-time availability of staff
+- For real account or booking issues, users should contact support directly
+- The staff and user profiles listed in this document are dummy test data for demonstration purposes only
+
+Response Style:
+- Keep responses short and simple — 2 to 4 sentences is ideal
+- Use simple, everyday English that anyone can understand
+- Avoid long paragraphs, technical words, or heavy language
+- Be friendly and direct — get to the point quickly
+- Use bullet points only when listing multiple items
+- If unsure, say "Please contact our support team" instead of guessing
