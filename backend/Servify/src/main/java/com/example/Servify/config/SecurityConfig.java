@@ -45,7 +45,7 @@ public class SecurityConfig {
                                 "/login/**",
                                 "/ws/**",
                                 "/**/*.html",
-                                "/api/image/**"
+                                "/api/v1/image/**"
                         ).permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

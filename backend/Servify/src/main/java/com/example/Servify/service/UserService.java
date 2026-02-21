@@ -53,7 +53,7 @@ public class UserService {
 
         String skillId = skillRepo.findByName(skillname).getSkillId();
 
-        return userRepo.findBySkillsSkillId(skillId).stream()
+        return userRepo.findBySkillId(skillId).stream()
                 .map(users -> dtoMapper.UserToDto(users))
                 .toList();
     }

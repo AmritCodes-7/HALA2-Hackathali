@@ -19,7 +19,7 @@ public class PyValidateController {
 
     @GetMapping("/validate")
     public ResponseEntity<BackendResponse> validateStaff(){
-        String message = pyValidateService.validateStaff();
+        boolean message = pyValidateService.validateStaff();
         return ResponseEntity.ok().body(new BackendResponse(true,message));
     }
     
