@@ -48,7 +48,6 @@ Instructions:
   * "Plumbing works" implies Plumber
   * "Stitching & Tailoring" implies Tailor
   * "Electrical wiring" implies Electrician
-- Skills are provided as "skill name (level X)" or just "Level X" — verify based on skill name
 - If a skill is partially mentioned, implied, or strongly related → mark "Verified"
 - Only mark "Not Verified" if there is absolutely no evidence or relation
 - Ignore filler text like "Lorem ipsum", "Signature", "Name Surname"
@@ -60,8 +59,8 @@ Claimed Skills: {user_skills}
 Certificate Text: {certificate_text}
 
 # "skills_verification": [
-#     {{"skill": "Barber (level 5)", "status": "Verified", "reason": "Certificate mentions hair cutting and styling training"}},
-#     {{"skill": "Plumber (level 3)", "status": "Not Verified", "reason": "No mention of plumbing or related work found"}}
+#     {{"skill": "Barber", "status": "Verified", "reason": "Certificate mentions hair cutting and styling training"}},
+#     {{"skill": "Plumber", "status": "Not Verified", "reason": "No mention of plumbing or related work found"}}
 #   ],
 Return your output as JSON:
 {{

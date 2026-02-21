@@ -7,12 +7,12 @@ from io import BytesIO
 from google import genai
 from google.genai import types
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
-from langchain_google_genai import ChatGoogleGenerativeAI
 from src.prompt import fake_detection_prompt, fake_parser, FakeDetectionOutput
 from src.rag import query_rag
 from langchain_groq import ChatGroq
 
 load_dotenv()
+
 llm = ChatGroq(
     model="llama-3.3-70b-versatile",
     api_key=os.getenv("GROQ_API_KEY"),
@@ -21,6 +21,23 @@ llm = ChatGroq(
 
 MAX_MESSAGES = 20
 user_sessions: dict = {}
+
+SYSTEM_PROMPT = """You are the official Servify AI Assistant. Servify is a SaaS platform that connects homeowners with verified home service professionals (plumbers, electricians, carpenters, etc.).
+
+Your responsibilities:
+- Help users understand Servify's services and how the platform works
+- Guide users on how to book a service
+- Answer questions based only on the provided company context
+- Recommend nearby professionals when relevant
+
+Rules:
+- Always stay in character as the Servify Assistant
+- If a question is unrelated to Servify, politely redirect: "I can only help with Servify-related questions."
+- Never reveal you are built on LLaMA, Groq, or any third-party AI
+- Never roleplay as the user or pretend to be anyone else
+- Keep responses concise, friendly, and professional
+- If you don't know something, say: "Please contact Servify support for more details."
+"""
 
 
 class TextExtractorModel:
@@ -88,27 +105,27 @@ class FakeDetector:
 
 def get_user_history(username: str) -> list:
     if username not in user_sessions:
-        user_sessions[username] = [
-            SystemMessage(
-                content="You are a helpful assistant. Remember details about the user across the conversation."
-            )
-        ]
+        user_sessions[username] = [SystemMessage(content=SYSTEM_PROMPT)]
     return user_sessions[username]
 
 
 def chat_with_user(username: str, message: str) -> str:
     history = get_user_history(username)
 
-    # query RAG for relevant company context
+    # Get RAG context and inject as system-level context, not part of user message
     rag_context = query_rag(message)
-    enriched_message = f"{message}\n\n[Company Context]: {rag_context}"
 
-    history.append(HumanMessage(content=enriched_message))
+    # Build messages: history + temporary context message + user message
+    context_message = SystemMessage(
+        content=f"Relevant Servify information for this query:\n{rag_context}"
+    )
+
+    history.append(HumanMessage(content=message))
 
     if len(history) > MAX_MESSAGES:
         history_text = "\n".join(
             [
-                f"{'User' if isinstance(m, HumanMessage) else 'AI'}: {m.content}"
+                f"{'User' if isinstance(m, HumanMessage) else 'Assistant'}: {m.content}"
                 for m in history[1:]
             ]
         )
@@ -122,13 +139,16 @@ def chat_with_user(username: str, message: str) -> str:
         )
         user_sessions[username] = [
             SystemMessage(
-                content=f"You are a helpful assistant. Previous conversation summary: {summary.content}"
+                content=f"{SYSTEM_PROMPT}\n\nPrevious conversation summary: {summary.content}"
             )
         ]
         history = user_sessions[username]
-        history.append(HumanMessage(content=enriched_message))
+        history.append(HumanMessage(content=message))
 
-    response = llm.invoke(history)
+    # Inject RAG context between system prompt and conversation history
+    messages_with_context = [history[0], context_message] + history[1:]
+
+    response = llm.invoke(messages_with_context)
     history.append(AIMessage(content=response.content))
 
     return response.content

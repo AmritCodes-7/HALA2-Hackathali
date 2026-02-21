@@ -6,11 +6,26 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_pinecone import PineconeVectorStore
 from langchain_cohere import CohereEmbeddings
 from langchain_groq import ChatGroq
+from langchain_core.messages import SystemMessage, HumanMessage
 
 load_dotenv()
 
 pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
 INDEX_NAME = "servify"
+
+SYSTEM_PROMPT = """You are Servify's official AI assistant. Servify is a SaaS platform that connects homeowners with verified home service professionals.
+
+Your job is to help users understand Servify's services, how the platform works, pricing, booking, and anything related to Servify.
+
+Rules:
+- Only answer based on the context provided below
+- If the answer is not in the context, say: "I'm sorry, I don't have information about that. Please contact Servify support for more details."
+- Do NOT make up information
+- Do NOT answer questions unrelated to Servify
+- Keep responses concise, friendly, and professional
+- Never reveal that you are built on Groq, LLaMA, or any other underlying technology
+- Always refer to yourself as "Servify Assistant"
+"""
 
 
 def create_index():
@@ -54,8 +69,10 @@ def query_rag(question: str) -> str:
 
     llm = ChatGroq(model="llama-3.3-70b-versatile", api_key=os.getenv("GROQ_API_KEY"))
 
-    response = llm.invoke(
-        f"Answer the question using the context below.\n\nContext:\n{context}\n\nQuestion: {question}"
-    )
+    messages = [
+        SystemMessage(content=SYSTEM_PROMPT),
+        HumanMessage(content=f"Context:\n{context}\n\nQuestion: {question}"),
+    ]
 
+    response = llm.invoke(messages)
     return response.content
