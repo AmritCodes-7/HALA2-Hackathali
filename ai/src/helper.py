@@ -43,7 +43,7 @@ Rules:
 class TextExtractorModel:
     def __init__(self):
         self.client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-        self.model = "gemini-2.5-flash"
+        self.model = "gemini-2.0-flash"
 
     def _validate_url(self, file_url: str) -> str:
         adapter = TypeAdapter(AnyHttpUrl)
@@ -86,7 +86,7 @@ class TextExtractorModel:
 class FakeDetector:
     def __init__(self):
         self.client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-        self.model = "gemini-2.5-flash"
+        self.model = "gemini-2.0-flash"
 
     def detect(self, image_url: str) -> FakeDetectionOutput:
         response = requests.get(image_url)
