@@ -15,7 +15,7 @@ public class PyValidateService {
     @Autowired RestTemplate restTemplate;
     @Autowired UserRepo userRepo;
 
-    private String validateUrl = "https://servify-theta.vercel.app/validate-user/";
+    private String validateUrl = "http://0.0.0.0:8000/validate-user/";
     
     public String validateStaff(){
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -23,6 +23,7 @@ public class PyValidateService {
         if (user.getCertificateUrl() != null){
             PyValidateResponse staffValidatedResponse = restTemplate.getForObject(validateUrl+user.getUsername(), PyValidateResponse.class);
             user.setIsStaffValidated(staffValidatedResponse.getResult());
+            userRepo.save(user); // FIX: persist the validation result
             return "validated";
         }
 

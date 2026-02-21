@@ -63,6 +63,7 @@ public class UserService {
         Users user = userRepo.findByUsername(username);
 
         user.getSkills().add(skill);
+        userRepo.save(user); // FIX: persist the updated skills list
     }
 
     public void deleteUser() {

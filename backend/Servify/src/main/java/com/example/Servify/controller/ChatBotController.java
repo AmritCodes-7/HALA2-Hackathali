@@ -19,7 +19,7 @@ public class ChatBotController {
 
     @Autowired RestTemplate restTemplate;
 
-    private final String fastUrl = "https://servify-theta.vercel.app/chatbot";
+    private final String fastUrl = "http://0.0.0.0:8000/chatbot";
     
     @PostMapping("/chatbot")
     public ResponseEntity<BackendResponse> sendPrompt(@RequestBody PyPrompt prompt) {

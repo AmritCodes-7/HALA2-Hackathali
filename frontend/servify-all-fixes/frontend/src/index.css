@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg:         #070709;
+  --surface:    #0f0f14;
+  --surface2:   #16161e;
+  --border:     #1e1e2a;
+  --border2:    #2a2a3d;
+  --accent:     #c8f04d;
+  --accent-dim: rgba(200,240,77,0.12);
+  --accent2:    #4dffc3;
+  --warn:       #ff6b6b;
+  --text:       #eeeef5;
+  --muted:      #6b6b85;
+  --muted2:     #9999b8;
+  --radius:     10px;
+  --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+}
+
+input, textarea, select {
+  font-family: 'DM Sans', sans-serif;
+}
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* Leaflet dark override */
+.leaflet-tile {
+  filter: invert(1) hue-rotate(180deg) brightness(0.8) contrast(1.1) saturate(0.6);
+}
+.leaflet-container {
+  background: #0a0a12 !important;
+  font-family: 'DM Sans', sans-serif;
+}
+.leaflet-popup-content-wrapper {
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+.leaflet-popup-tip { background: var(--surface2); }
+.leaflet-popup-content { margin: 12px 16px; }
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position:  200% 0; }
+}
+
+.fade-up {
+  animation: fadeUp 0.4s ease forwards;
+}
