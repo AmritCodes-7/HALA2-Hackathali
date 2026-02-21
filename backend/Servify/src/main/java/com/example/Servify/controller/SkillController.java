@@ -26,7 +26,7 @@ public class SkillController {
         this.skillServices = skillServices;
     }
 
-    @GetMapping("/skills")
+    @GetMapping("/get/skills")
     public ResponseEntity<BackendResponse> findAllSkills() {
         List<SkillDto> skills = skillServices.findAllSkills();
 
