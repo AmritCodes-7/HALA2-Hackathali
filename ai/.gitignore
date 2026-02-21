@@ -1,5 +1,5 @@
 .env
-research
+research/
 */__pycache__
 */*.ipynb
 
@@ -8,3 +8,7 @@ __pycache__
 
 test.py
 setup.py
+
+__pycache__/
+*.pyc
+*.ipynb
