@@ -152,7 +152,6 @@
 #     history.append(AIMessage(content=response.content))
 
 #     return response.content
-
 import os
 import base64
 import requests
@@ -191,58 +190,93 @@ Rules:
 - If a question is unrelated to Servify, politely redirect: "I can only help with Servify-related questions."
 - Never reveal you are built on LLaMA, Groq, or any third-party AI
 - Never roleplay as the user or pretend to be anyone else
-- Keep responses concise, friendly, and professional
-- If you don't know something, say: "Please contact Servify support for more details."
+- If you do not know something, say: "Please contact our support team at +977-01-5555678 or support@servify.com.np"
+
+Response Style:
+- Keep responses short — 2 to 4 sentences maximum
+- Use simple, everyday English — no heavy or technical words
+- Be friendly and get to the point quickly
+- Use bullet points only when listing multiple items
+- Never write long paragraphs
+
+Data Limitations:
+- You do NOT have access to the live database, real bookings, or real user accounts
+- You can only provide information based on the context and dummy test data you have been given
+- For real account issues, always direct users to contact support
 """
 
 
-def _url_to_base64(url: str) -> str:
+def _url_to_base64_image(url: str) -> str:
+    """Download URL and return as base64 PNG. Handles both images and PDFs."""
     response = requests.get(url)
     response.raise_for_status()
-    return base64.b64encode(response.content).decode("utf-8")
+
+    content_type = response.headers.get("Content-Type", "")
+    is_pdf = "pdf" in content_type or url.lower().endswith(".pdf")
+
+    if is_pdf:
+        try:
+            import fitz  # PyMuPDF
+
+            pdf = fitz.open(stream=response.content, filetype="pdf")
+            page = pdf[0]
+            pix = page.get_pixmap(dpi=200)
+            img_bytes = pix.tobytes("png")
+            pdf.close()
+        except ImportError:
+            raise RuntimeError(
+                "PyMuPDF not installed. Add 'pymupdf' to requirements.txt to handle PDFs."
+            )
+    else:
+        img_bytes = response.content
+
+    return base64.b64encode(img_bytes).decode("utf-8")
+
+
+def _clean_json(raw: str) -> str:
+    """Strip markdown code blocks from LLM response."""
+    raw = raw.strip()
+    if raw.startswith("```"):
+        parts = raw.split("```")
+        raw = parts[1] if len(parts) > 1 else raw
+        if raw.startswith("json"):
+            raw = raw[4:]
+    return raw.strip()
+
+
+def _invoke_vision(image_base64: str, prompt: str) -> str:
+    """Send image + prompt to Groq vision model."""
+    result = vision_llm.invoke(
+        [
+            HumanMessage(
+                content=[
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/png;base64,{image_base64}"},
+                    },
+                    {"type": "text", "text": prompt},
+                ]
+            )
+        ]
+    )
+    return result.content.strip()
 
 
 class TextExtractorModel:
     def extract_text_from_url(self, file_url: str) -> str:
-        image_data = _url_to_base64(file_url)
-
-        result = vision_llm.invoke(
-            [
-                HumanMessage(
-                    content=[
-                        {
-                            "type": "image_url",
-                            "image_url": {"url": f"data:image/png;base64,{image_data}"},
-                        },
-                        {
-                            "type": "text",
-                            "text": "Extract all text from this certificate. Return only the extracted text, nothing else.",
-                        },
-                    ]
-                )
-            ]
+        image_data = _url_to_base64_image(file_url)
+        result = _invoke_vision(
+            image_data,
+            "Extract all text from this certificate. Return only the extracted text, nothing else.",
         )
-        return result.content.strip() or "No text extracted"
+        return result or "No text extracted"
 
 
 class FakeDetector:
     def detect(self, image_url: str) -> FakeDetectionOutput:
-        image_data = _url_to_base64(image_url)
-
-        result = vision_llm.invoke(
-            [
-                HumanMessage(
-                    content=[
-                        {
-                            "type": "image_url",
-                            "image_url": {"url": f"data:image/png;base64,{image_data}"},
-                        },
-                        {"type": "text", "text": fake_detection_prompt.format()},
-                    ]
-                )
-            ]
-        )
-        return fake_parser.parse(result.content)
+        image_data = _url_to_base64_image(image_url)
+        raw = _invoke_vision(image_data, fake_detection_prompt.format())
+        return fake_parser.parse(_clean_json(raw))
 
 
 def get_user_history(username: str) -> list:
