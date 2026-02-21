@@ -8,13 +8,18 @@ import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.example.Servify.dto.BackendResponse;
+import com.example.Servify.model.Users;
+import com.example.Servify.repository.UserRepo;
 import com.mongodb.client.gridfs.model.GridFSFile;
 
 import io.jsonwebtoken.io.IOException;
@@ -26,6 +31,9 @@ public class ImageController {
 
     @Autowired
     private GridFsTemplate gridFsTemplate;
+
+    @Autowired UserRepo userRepo;
+
 
     @GetMapping("/image/{imageId}")
         public ResponseEntity<?> getImage(@PathVariable String imageId) throws IOException, java.io.IOException {
@@ -44,10 +52,14 @@ public class ImageController {
     }
 
     @PostMapping("/change-certificate")
-    public String postMethodName(@RequestBody String entity) {
-        //TODO: process POST request
+    public ResponseEntity<BackendResponse> changeCertificate(@RequestPart("file") MultipartFile certificate) throws java.io.IOException {
         
-        return entity;
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        Users user = userRepo.findByUsername(name);
+        ObjectId store = gridFsTemplate.store(certificate.getInputStream(),certificate.getOriginalFilename(),certificate.getContentType());
+        user.setCertificateUrl("http://localhost:8080/api/v1/image/" + store);
+        userRepo.save(user);
+        return ResponseEntity.ok().body(new BackendResponse(true,"changed"));
     }
     
 
