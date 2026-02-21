@@ -1,0 +1,14 @@
+.env
+research/
+*/__pycache__
+*/*.ipynb
+
+.venv
+__pycache__
+
+test.py
+setup.py
+
+__pycache__/
+*.pyc
+*.ipynb
