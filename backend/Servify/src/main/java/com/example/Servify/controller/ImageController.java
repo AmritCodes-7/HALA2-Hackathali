@@ -10,12 +10,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mongodb.client.gridfs.model.GridFSFile;
 
 import io.jsonwebtoken.io.IOException;
+
 
 @RestController
 @RequestMapping("/api/v1")
@@ -39,5 +42,13 @@ public class ImageController {
                 .contentType(MediaType.parseMediaType(file.getMetadata().get("_contentType").toString()))
                 .body(resource.getInputStream().readAllBytes());
     }
+
+    @PostMapping("/change-certificate")
+    public String postMethodName(@RequestBody String entity) {
+        //TODO: process POST request
+        
+        return entity;
+    }
+    
 
 }
