@@ -11,19 +11,18 @@ from src.rag import create_index, ingest_documents
 
 load_dotenv()
 
-USER_INFO_API = "http://localhost:8081/api/py/{username}"
 
 app = FastAPI()
 
 
-class Skill(BaseModel):
-    skill: str | None = None
-    level: int | None = None
+# class Skill(BaseModel):
+#     skill: str | None = None
+#     level: int | None = None
 
 
 class UserMessage(BaseModel):
     username: str
-    skills: List[Skill]
+    skills: List[str]
     certificateUrl: str
 
 
@@ -44,11 +43,12 @@ llm = ChatGroq(
 )
 
 create_index()
-ingest_documents("../ai/data/servify_rag.txt")
+ingest_documents("src/data/servify_rag.txt")
 
 
 @app.get("/validate-user/{username}")
 async def validate_user(username: str):
+    USER_INFO_API = os.getenv("USER_INFO_USER") + "/{username}"
     url = USER_INFO_API.format(username=username)
 
     async with httpx.AsyncClient() as client:
@@ -66,14 +66,7 @@ async def validate_user(username: str):
             "reason": f"Certificate appears fake: {authenticity.reason}",
         }
 
-    user_skills = [
-        (
-            f"{skill.skill} (level {skill.level})"
-            if skill.skill
-            else f"Level {skill.level}"
-        )
-        for skill in data.message.skills
-    ]
+    user_skills = list(data.message.skills)
 
     textExtractor = TextExtractorModel()
     certificate_text = textExtractor.extract_text_from_url(data.message.certificateUrl)
