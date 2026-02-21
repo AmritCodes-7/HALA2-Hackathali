@@ -1,0 +1,48 @@
+package com.example.Servify.controller;
+
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.Servify.dto.BackendResponse;
+import com.example.Servify.dto.SkillDto;
+import com.example.Servify.model.Skill;
+import com.example.Servify.service.SkillServices;
+
+
+@RestController
+@RequestMapping("/api/v1")
+public class SkillController {
+
+    private final SkillServices skillServices;
+
+
+    public SkillController(SkillServices skillServices) {
+        this.skillServices = skillServices;
+    }
+
+    @GetMapping("/get/skills")
+    public ResponseEntity<BackendResponse> findAllSkills() {
+        List<SkillDto> skills = skillServices.findAllSkills();
+
+        return ResponseEntity
+                .ok()
+                .body(new BackendResponse(true, skills));
+    }
+
+    @PostMapping("/add-skill")
+    public ResponseEntity<BackendResponse> addSkill(@RequestBody Skill skill) {
+        String message = skillServices.addSkill(skill);
+
+        return ResponseEntity
+                .ok()
+                .body(new BackendResponse(true, message));
+    }
+    
+
+}
